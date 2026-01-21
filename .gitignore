@@ -61,3 +61,10 @@ coverage/
 
 # 本地开发配置
 .cursor/
+
+# 3D模型和导出缓存（开发时忽略，大文件请用 CDN 或 Git LFS）
+models/*.glb
+models/*.gltf
+models/*.zip
+models/cache/
+*.temp
