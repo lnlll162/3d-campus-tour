@@ -1,0 +1,67 @@
+<!-- pages/index/index.wxml -->
+<view class="container">
+
+  <!-- 3D渲染画布（始终存在，位于最底层） -->
+  <canvas
+    canvas-id="webgl"
+    class="webgl-canvas"
+    type="webgl"
+    width="{{windowWidth}}"
+    height="{{windowHeight}}"
+    disable-scroll="true"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd">
+  </canvas>
+
+  <!-- 临时调试文本，确保渲染正常 -->
+  <view class="debug-info" wx:if="{{!sceneReady}}">
+    Canvas尺寸: {{windowWidth}}x{{windowHeight}}
+  </view>
+
+  <!-- 加载状态（覆盖在canvas之上） -->
+  <view wx:if="{{loading}}" class="loader">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">{{loadingText}}</text>
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{loadingProgress}}%"></view>
+    </view>
+  </view>
+
+  <!-- 错误状态（覆盖在canvas之上） -->
+  <view wx:elif="{{error}}" class="error-container">
+    <view class="error-icon">⚠️</view>
+    <text class="error-title">{{error.title}}</text>
+    <text class="error-message">{{error.message}}</text>
+    <button class="retry-btn" bindtap="onRetry">重试</button>
+  </view>
+
+  <!-- UI覆盖层（仅在3D场景就绪时显示） -->
+  <view wx:else class="ui-overlay">
+    <!-- 顶部信息栏 -->
+    <view class="top-info">
+      <text class="info-text">3D校园云旅游</text>
+      <text class="fps-text">FPS: {{fps}}</text>
+    </view>
+
+    <!-- 底部控制栏 -->
+    <view class="bottom-controls">
+      <button class="control-btn" bindtap="onResetCamera">重置视角</button>
+      <button class="control-btn" bindtap="onToggleInfo">信息面板</button>
+      <button class="control-btn" bindtap="onShare">分享</button>
+    </view>
+
+    <!-- 信息面板 -->
+    <view wx:if="{{showInfoPanel}}" class="info-panel">
+      <view class="info-card">
+        <text class="card-title">欢迎来到3D校园</text>
+        <text class="card-content">
+          使用手指拖拽来旋转视角，双指缩放来缩放场景。
+          点击建筑可以查看详细信息。
+        </text>
+        <button class="btn" bindtap="onCloseInfo">知道了</button>
+      </view>
+    </view>
+  </view>
+
+</view>

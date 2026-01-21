@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "天津商业大学3D校园",
+  "navigationBarBackgroundColor": "#003366",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#f1f5f9",
+  "enablePullDownRefresh": false,
+  "disableScroll": true,
+  "usingComponents": {},
+  "backgroundColorTop": "#003366",
+  "backgroundColorBottom": "#f1f5f9"
+}

@@ -1,0 +1,222 @@
+/* 小程序全局样式 - 天津商业大学主题 */
+/* 天津商业大学品牌色定义 */
+:root {
+  --tuc-primary: #003366;      /* 天商深蓝 */
+  --tuc-secondary: #004080;    /* 天商商务蓝 */
+  --tuc-accent: #1a4f7a;       /* 天商亮蓝 */
+  --tuc-gold: #d4af37;         /* 天商金色 */
+  --tuc-light-gold: #ffd700;   /* 亮金色 */
+  --tuc-white: #ffffff;        /* 纯白 */
+  --tuc-gray-50: #f8fafc;      /* 极浅灰 */
+  --tuc-gray-100: #f1f5f9;     /* 浅灰 */
+  --tuc-gray-200: #e2e8f0;     /* 中浅灰 */
+  --tuc-gray-300: #cbd5e1;     /* 中灰 */
+  --tuc-gray-400: #94a3b8;     /* 灰色 */
+  --tuc-gray-500: #64748b;     /* 中深灰 */
+  --tuc-gray-600: #475569;     /* 深灰 */
+  --tuc-gray-700: #334155;     /* 极深灰 */
+  --tuc-gray-800: #1e293b;     /* 深黑灰 */
+  --tuc-gray-900: #0f172a;     /* 近黑 */
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--tuc-primary) 0%, var(--tuc-secondary) 50%, var(--tuc-accent) 100%);
+}
+
+/* 加载器样式 */
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+}
+
+.loading-spinner {
+  width: 80rpx;
+  height: 80rpx;
+  border: 6rpx solid var(--tuc-gray-200);
+  border-top: 6rpx solid var(--tuc-gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20rpx;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: #666;
+  font-size: 28rpx;
+  margin-bottom: 20rpx;
+}
+
+.progress-bar {
+  width: 300rpx;
+  height: 8rpx;
+  background-color: var(--tuc-gray-200);
+  border-radius: 4rpx;
+  overflow: hidden;
+  margin-bottom: 20rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--tuc-gold) 0%, var(--tuc-light-gold) 100%);
+  border-radius: 4rpx;
+  transition: width 0.3s ease;
+}
+
+/* 错误提示样式 */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+  background-color: #fff2f2;
+  border-radius: 12rpx;
+  margin: 40rpx;
+}
+
+.error-icon {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 20rpx;
+}
+
+.error-title {
+  color: #ff4757;
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 16rpx;
+}
+
+.error-message {
+  color: #666;
+  font-size: 28rpx;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 30rpx;
+}
+
+.retry-btn {
+  background: linear-gradient(135deg, var(--tuc-primary) 0%, var(--tuc-secondary) 100%);
+  color: var(--tuc-white);
+  border: 2rpx solid var(--tuc-gold);
+  border-radius: 12rpx;
+  padding: 20rpx 40rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4rpx 12rpx rgba(0, 51, 102, 0.3);
+  transition: all 0.3s ease;
+}
+
+.retry-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(0, 51, 102, 0.4);
+}
+
+/* 按钮样式 */
+.btn {
+  background: linear-gradient(135deg, var(--tuc-primary) 0%, var(--tuc-secondary) 100%);
+  color: var(--tuc-white);
+  border: 2rpx solid var(--tuc-gold);
+  border-radius: 12rpx;
+  padding: 24rpx 48rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4rpx 16rpx rgba(0, 51, 102, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: linear-gradient(135deg, var(--tuc-secondary) 0%, var(--tuc-accent) 100%);
+  transform: translateY(-2rpx);
+  box-shadow: 0 6rpx 20rpx rgba(0, 51, 102, 0.4);
+}
+
+.btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 8rpx rgba(0, 51, 102, 0.4);
+}
+
+.btn:disabled {
+  background: var(--tuc-gray-300);
+  border-color: var(--tuc-gray-400);
+  color: var(--tuc-gray-500);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 信息卡片样式 - 天津商业大学风格 */
+.info-card {
+  background: var(--tuc-white);
+  border-radius: 16rpx;
+  padding: 40rpx;
+  margin: 20rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 51, 102, 0.15);
+  border: 2rpx solid var(--tuc-gray-100);
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, var(--tuc-primary) 0%, var(--tuc-gold) 50%, var(--tuc-secondary) 100%);
+}
+
+.card-title {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: var(--tuc-primary);
+  margin-bottom: 20rpx;
+  text-align: center;
+  position: relative;
+}
+
+.card-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 4rpx;
+  background: var(--tuc-gold);
+  border-radius: 2rpx;
+}
+
+.card-content {
+  font-size: 30rpx;
+  color: var(--tuc-gray-600);
+  line-height: 1.7;
+  text-align: center;
+}
+
+/* 天商特色装饰元素 */
+.tuc-decoration {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  width: 80rpx;
+  height: 80rpx;
+  opacity: 0.1;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text fill="%23003366" font-size="80" font-family="serif" x="50" y="70" text-anchor="middle">商</text></svg>') no-repeat center;
+  background-size: contain;
+}

@@ -1,0 +1,73 @@
+
+{
+  "description": "天津商业大学3D校园云旅游小程序 - 沉浸式虚拟校园体验",
+  "miniprogramRoot": "./",
+  "compileType": "miniprogram",
+  "appid": "wx3352b8a1a284fe46",
+  "projectname": "3D-Campus-Tour",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "preloadBackgroundData": false,
+    "minified": true,
+    "newFeature": false,
+    "coverView": true,
+    "nodeModules": false,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false,
+    "uglifyFileName": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": true,
+    "uploadWithSourceMap": true,
+    "compileHotReLoad": false,
+    "lazyloadPlaceholderEnable": false,
+    "useMultiFrameRuntime": true,
+    "useApiHook": true,
+    "useApiHostProcess": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "enableEngineNative": false,
+    "useIsolateContext": true,
+    "userConfirmedBundleSwitch": false,
+    "packNpmManually": true,
+    "packNpmRelationList": [
+      {
+        "name": "weapp-adapter",
+        "packageJsonPath": "./miniprogram_npm/weapp-adapter/package.json",
+        "miniprogramNpmDistDir": "miniprogram_npm/weapp-adapter"
+      },
+      {
+        "name": "threejs-miniprogram",
+        "packageJsonPath": "./miniprogram_npm/threejs-miniprogram/package.json",
+        "miniprogramNpmDistDir": "miniprogram_npm/threejs-miniprogram"
+      }
+    ],
+    "minifyWXSS": true,
+    "disableUseStrict": false,
+    "minifyWXML": true,
+    "showES6CompileOption": false,
+    "useCompilerPlugins": false,
+    "ignoreUploadUnusedFiles": true,
+    "compileWorklet": false,
+    "localPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true
+  },
+  "condition": {},
+  "libVersion": "3.13.0",
+  "lazyCodeLoading": "requiredComponents",
+  "srcMiniprogramRoot": "miniprogram/",
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "editorSetting": {}
+}

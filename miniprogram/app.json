@@ -1,0 +1,21 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#003366",
+    "navigationBarTitleText": "天津商业大学3D校园",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f1f5f9"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "您的位置信息将用于定位校园位置"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
+  "lazyCodeLoading": "requiredComponents"
+}

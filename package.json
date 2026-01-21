@@ -7,9 +7,12 @@
     "dev": "http-server . -p 3000 -o",
     "build": "echo 'Building for production...'",
     "lint": "eslint js/**/*.js --fix",
-    "test": "echo 'Running tests...'",
+    "test": "node scripts/test-miniprogram.js",
+    "test:web": "echo 'Running web tests...'",
     "preview": "http-server dist -p 8080 -o",
-    "miniprogram": "echo '请使用微信开发者工具打开 miniprogram 文件夹'"
+    "miniprogram": "echo '请使用微信开发者工具打开 miniprogram 文件夹'",
+    "compress": "node scripts/compress-models.js",
+    "prepare-models": "node scripts/compress-models.js models/input.glb models/output.glb"
   },
   "keywords": [
     "3d",
@@ -23,8 +26,12 @@
   "author": "3D Campus Tour Team",
   "license": "MIT",
   "devDependencies": {
-    "http-server": "^14.1.1",
-    "eslint": "^8.57.0"
+    "eslint": "^8.57.0",
+    "http-server": "^14.1.1"
+  },
+  "miniprogramDependencies": {
+    "three-miniprogram": "^0.1.0",
+    "weapp-adapter": "^1.0.0"
   },
   "engines": {
     "node": ">=16.0.0"
@@ -36,5 +43,10 @@
   "bugs": {
     "url": "https://github.com/your-username/3d-campus-tour/issues"
   },
-  "homepage": "https://github.com/your-username/3d-campus-tour#readme"
+  "homepage": "https://github.com/your-username/3d-campus-tour#readme",
+  "dependencies": {
+    "three": "^0.182.0",
+    "threejs-miniprogram": "^0.0.8",
+    "weapp-adapter": "^1.0.0"
+  }
 }

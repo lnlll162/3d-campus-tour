@@ -1,0 +1,21 @@
+导出每栋建筑的 3 个 glb 文件，按下面格式命名：
+buildingname_exterior_lod2.glb （最简，远处看得见）
+buildingname_exterior_lod1.glb （中等）
+buildingname_exterior_lod0.glb （近处看得清楚）
+例：library_exterior_lod2.glb, library_exterior_lod1.glb, library_exterior_lod0.glb
+单位与方向（很重要）：
+单位：米（请在建模软件里把单位设为米）
+朝向：模型底面朝下（地面为 Y=0），正前方朝 +Z（如果不清楚我可以发截图示例）
+模型内容：只要“外壳”即可（外墙、屋顶、阳台、门廊、台阶），不要做室内家具和房间细节。
+对齐锚点：请在模型里放一个命名节点 anchor_origin（放在建筑底面中心或主入口），用于我们在程序中自动对齐。
+元数据：随模型附一个简短 JSON 文件（文本），内容示例：
+{
+"id":"library",
+"name":"图书馆",
+"lod":["library_exterior_lod0.glb","library_exterior_lod1.glb","library_exterior_lod2.glb"]
+}
+上传：把 3 个 glb + 1 个 json 压缩成 zip 发给我
+自检：
+glb 能打开（我会再做加载测试）
+建筑大小和门、窗位置看起来自然
+lod2 文件尽量小（少面数），lod0 注重外观细节

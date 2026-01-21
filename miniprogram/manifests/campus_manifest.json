@@ -1,0 +1,60 @@
+{
+  "version": "1.0",
+  "generated": "2026-01-21T00:00:00Z",
+  "regions": [
+    {
+      "id": "main_gate",
+      "name": "主校门",
+      "bbox": [-10, 0, -10, 10, 10, 10],
+      "priority": 1,
+      "platform": ["web", "miniprogram"],
+      "lod": {
+        "lod0": {
+          "download_url": "https://your-cdn.example.com/models/main_gate_lod0.glb",
+          "version": "1.0",
+          "sha256": "",
+          "level": "lod0"
+        },
+        "lod1": {
+          "download_url": "https://your-cdn.example.com/models/main_gate_lod1.glb",
+          "version": "1.0",
+          "sha256": "",
+          "level": "lod1"
+        },
+        "lod2": {
+          "download_url": "https://your-cdn.example.com/models/main_gate_lod2.glb",
+          "version": "1.0",
+          "sha256": "",
+          "level": "lod2"
+        }
+      }
+    },
+    {
+      "id": "sample_building",
+      "name": "示例建筑",
+      "bbox": [20, 0, -5, 60, 30, 25],
+      "priority": 2,
+      "platform": ["web", "miniprogram"],
+      "lod": {
+        "lod0": {
+          "download_url": "https://your-cdn.example.com/models/sample_building_lod0.glb",
+          "version": "1.0",
+          "sha256": "",
+          "level": "lod0"
+        },
+        "lod1": {
+          "download_url": "https://your-cdn.example.com/models/sample_building_lod1.glb",
+          "version": "1.0",
+          "sha256": "",
+          "level": "lod1"
+        },
+        "lod2": {
+          "download_url": "https://your-cdn.example.com/models/sample_building_lod2.glb",
+          "version": "1.0",
+          "sha256": "",
+          "level": "lod2"
+        }
+      }
+    }
+  ]
+}

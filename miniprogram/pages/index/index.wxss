@@ -1,0 +1,326 @@
+/* pages/index/index.wxss */
+.container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* 3D渲染画布 - 简化样式以确保能被找到 */
+.webgl-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* 暂时移除复杂样式 */
+  background: #f0f0f0;
+}
+
+/* 加载和错误状态 - 覆盖在canvas之上 */
+.loader, .error-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10rpx);
+}
+
+/* UI覆盖层 - 仅在3D场景就绪时显示 */
+.ui-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* 顶部信息栏 - 天津商业大学风格 */
+.top-info {
+  position: absolute;
+  top: 40rpx;
+  left: 40rpx;
+  right: 40rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.info-text {
+  color: var(--tuc-white);
+  font-size: 36rpx;
+  font-weight: bold;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, rgba(0, 51, 102, 0.8) 0%, rgba(0, 64, 128, 0.8) 100%);
+  padding: 16rpx 24rpx;
+  border-radius: 20rpx;
+  border: 2rpx solid var(--tuc-gold);
+  backdrop-filter: blur(10rpx);
+  position: relative;
+}
+
+.info-text::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 0%, rgba(212, 175, 55, 0.1) 50%, transparent 100%);
+  border-radius: 18rpx;
+}
+
+.fps-text {
+  color: var(--tuc-white);
+  font-size: 24rpx;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.8) 0%, rgba(255, 215, 0, 0.8) 100%);
+  padding: 12rpx 20rpx;
+  border-radius: 16rpx;
+  text-shadow: 0 1rpx 4rpx rgba(0, 0, 0, 0.4);
+  border: 1rpx solid var(--tuc-gold);
+  font-weight: 500;
+  backdrop-filter: blur(10rpx);
+}
+
+/* 底部控制栏 - 天津商业大学风格 */
+.bottom-controls {
+  position: absolute;
+  bottom: 40rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20rpx;
+  pointer-events: auto;
+}
+
+.control-btn {
+  background: linear-gradient(135deg, var(--tuc-white) 0%, var(--tuc-gray-50) 100%);
+  color: var(--tuc-primary);
+  border: 2rpx solid var(--tuc-gold);
+  border-radius: 16rpx;
+  padding: 20rpx 32rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  box-shadow: 0 6rpx 20rpx rgba(0, 51, 102, 0.15);
+  backdrop-filter: blur(15rpx);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.control-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.control-btn:hover::before {
+  left: 100%;
+}
+
+.control-btn:active {
+  transform: translateY(2rpx) scale(0.98);
+  box-shadow: 0 3rpx 12rpx rgba(0, 51, 102, 0.25);
+}
+
+/* 信息面板 */
+.info-panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+}
+
+.info-card {
+  background: linear-gradient(135deg, var(--tuc-white) 0%, var(--tuc-gray-50) 100%);
+  backdrop-filter: blur(25rpx);
+  border-radius: 20rpx;
+  padding: 50rpx;
+  min-width: 650rpx;
+  max-width: 85vw;
+  box-shadow: 0 12rpx 40rpx rgba(0, 51, 102, 0.25);
+  border: 3rpx solid var(--tuc-gold);
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8rpx;
+  background: linear-gradient(90deg, var(--tuc-primary) 0%, var(--tuc-gold) 50%, var(--tuc-secondary) 100%);
+}
+
+.card-title {
+  font-size: 42rpx;
+  font-weight: bold;
+  color: var(--tuc-primary);
+  margin-bottom: 24rpx;
+  text-align: center;
+  position: relative;
+}
+
+.card-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80rpx;
+  height: 5rpx;
+  background: var(--tuc-gold);
+  border-radius: 3rpx;
+}
+
+.card-content {
+  font-size: 30rpx;
+  color: var(--tuc-gray-600);
+  line-height: 1.7;
+  margin-bottom: 40rpx;
+  text-align: center;
+}
+
+.btn {
+  background: linear-gradient(135deg, var(--tuc-primary) 0%, var(--tuc-secondary) 100%);
+  color: var(--tuc-white);
+  border: 2rpx solid var(--tuc-gold);
+  border-radius: 16rpx;
+  padding: 24rpx 48rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  width: 100%;
+  box-shadow: 0 6rpx 20rpx rgba(0, 51, 102, 0.4);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn:active::before {
+  left: 100%;
+}
+
+.btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 3rpx 12rpx rgba(0, 51, 102, 0.5);
+}
+
+/* 加载动画增强 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.loader, .error-container, .info-card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* 响应式设计 */
+@media (max-width: 750rpx) {
+  .top-info {
+    top: 20rpx;
+    left: 20rpx;
+    right: 20rpx;
+  }
+
+  .info-text {
+    font-size: 28rpx;
+    padding: 12rpx 20rpx;
+  }
+
+  .fps-text {
+    font-size: 20rpx;
+    padding: 8rpx 16rpx;
+  }
+
+  .bottom-controls {
+    bottom: 20rpx;
+    gap: 16rpx;
+  }
+
+  .control-btn {
+    padding: 16rpx 24rpx;
+    font-size: 24rpx;
+  }
+
+  .info-card {
+    padding: 32rpx;
+    min-width: 500rpx;
+  }
+
+  .card-title {
+    font-size: 32rpx;
+  }
+
+  .card-content {
+    font-size: 26rpx;
+  }
+
+  .btn {
+    padding: 20rpx 40rpx;
+    font-size: 28rpx;
+  }
+}
+
+/* 临时调试信息 */
+.debug-info {
+  position: absolute;
+  top: 100rpx;
+  left: 20rpx;
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
+  padding: 10rpx;
+  font-size: 24rpx;
+  z-index: 1000;
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .control-btn {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+  }
+
+  .info-card {
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+  }
+
+  .card-title {
+    color: white;
+  }
+
+  .card-content {
+    color: #ccc;
+  }
+}
