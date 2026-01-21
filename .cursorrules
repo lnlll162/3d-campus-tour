@@ -1,0 +1,439 @@
+# 3D校园云旅游项目开发规范
+
+## 🎯 项目概述
+
+**项目名称**: 3D校园云旅游系统  
+**项目目标**: 基于WebGL和微信小程序技术，实现沉浸式3D校园虚拟旅游体验  
+**技术栈**: Three.js + WebGL + 微信小程序 + Node.js  
+**目标用户**: 学生、教师、校友、访客
+
+## 🏗️ 技术架构规范
+
+### 核心技术栈
+- **前端框架**: 原生JavaScript + Three.js r150+
+- **小程序框架**: 微信小程序原生框架
+- **3D引擎**: Three.js WebGL渲染引擎
+- **模型格式**: GLTF/GLB 优先
+- **样式框架**: 原生CSS + 微信小程序样式
+
+### 开发环境要求
+- **Node.js**: >= 16.0.0
+- **npm/yarn**: 最新稳定版
+- **微信开发者工具**: 最新版
+- **Git**: >= 2.30.0
+
+## 📁 项目结构规范
+
+### Web版本结构
+```
+web/
+├── index.html          # 主页面
+├── css/
+│   ├── style.css       # 主样式文件
+│   ├── responsive.css  # 响应式样式
+│   └── themes.css      # 主题样式
+├── js/
+│   ├── app.js          # 应用主逻辑
+│   ├── scene.js        # 场景管理
+│   ├── camera.js       # 相机控制
+│   ├── controls.js     # 交互控制
+│   ├── loader.js       # 模型加载器
+│   ├── ui.js           # UI管理
+│   └── utils.js        # 工具函数
+├── models/             # 3D模型文件
+├── textures/           # 纹理贴图
+└── assets/             # 静态资源
+```
+
+### 微信小程序结构
+```
+miniprogram/
+├── app.js              # 小程序入口
+├── app.json            # 小程序配置
+├── app.wxss            # 全局样式
+├── pages/              # 页面文件夹
+│   ├── index/          # 首页
+│   ├── campus/         # 3D校园页
+│   ├── guide/          # 导览页
+│   └── info/           # 信息页
+├── components/         # 自定义组件
+├── utils/              # 工具函数
+├── models/             # 3D模型
+└── assets/             # 静态资源
+```
+
+## 💻 代码风格规范
+
+### JavaScript规范
+```javascript
+// 使用ES6+语法
+// 命名规范
+const camelCaseVariable = '驼峰命名';
+const PascalCaseClass = class {};
+const UPPER_CASE_CONSTANT = '大写常量';
+
+// 函数命名
+function doSomething() {}           // 动词开头
+function getUserData() {}           // 获取数据
+function setUserConfig() {}         // 设置配置
+function isUserLoggedIn() {}        // 布尔值检查
+
+// 注释规范
+/**
+ * 函数功能描述
+ * @param {string} param1 - 参数1描述
+ * @param {number} param2 - 参数2描述
+ * @returns {Object} 返回值描述
+ */
+function exampleFunction(param1, param2) {
+    // 单行注释
+    /*
+     * 多行注释
+     * 用于复杂逻辑说明
+     */
+
+    return result;
+}
+```
+
+### CSS规范
+```css
+/* 组件命名使用BEM规范 */
+.campus-viewer {
+    /* 组件根类 */
+}
+
+.campus-viewer__scene {
+    /* 组件元素 */
+}
+
+.campus-viewer__scene--loading {
+    /* 组件修饰符 */
+}
+
+/* 响应式断点 */
+@media (max-width: 768px) {
+    .campus-viewer {
+        /* 移动端样式 */
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .campus-viewer {
+        /* 平板样式 */
+    }
+}
+
+@media (min-width: 1025px) {
+    .campus-viewer {
+        /* 桌面端样式 */
+    }
+}
+```
+
+### HTML规范
+```html
+<!-- 语义化标签 -->
+<header class="app-header">
+    <h1>3D校园云旅游</h1>
+</header>
+
+<main class="main-content">
+    <section class="campus-section">
+        <!-- 3D渲染容器 -->
+        <div id="viewer-container" class="viewer-container"></div>
+    </section>
+</main>
+
+<footer class="app-footer">
+    <p>&copy; 2024 3D校园云旅游项目</p>
+</footer>
+```
+
+## 🔧 开发流程规范
+
+### Git分支管理
+```
+main                    # 主分支 (生产环境)
+├── develop            # 开发分支
+│   ├── feature/3d-viewer    # 3D查看器功能
+│   ├── feature/miniprogram  # 小程序开发
+│   ├── feature/model-loader # 模型加载功能
+│   └── feature/ui-optimize  # UI优化
+├── release/v1.0       # 发布分支
+└── hotfix/bug-fix     # 热修复分支
+```
+
+### 提交信息规范
+```
+feat: 新功能 (新增功能)
+fix: 修复bug (修复问题)
+docs: 文档更新 (文档类改动)
+style: 代码格式 (不影响逻辑的改动)
+refactor: 重构 (重构现有代码)
+test: 测试 (测试相关)
+chore: 构建工具 (构建过程或工具配置)
+```
+
+### 代码审查标准
+- [ ] **功能完整性**: 实现需求的所有功能点
+- [ ] **代码质量**: 遵循编码规范，无明显代码异味
+- [ ] **性能表现**: 无明显的性能问题
+- [ ] **错误处理**: 完善的异常处理机制
+- [ ] **测试覆盖**: 核心功能有相应测试
+- [ ] **文档完整**: 重要函数和类有文档注释
+
+## 🎨 3D建模规范
+
+### 模型要求
+- **格式**: GLB/GLTF 优先
+- **单位**: 米 (1单位 = 1米)
+- **坐标系**: 右手坐标系，Y轴向上
+- **面数控制**: 单个建筑 5K-15K面
+- **纹理分辨率**: 主要建筑 2048x2048
+
+### 材质标准
+- **渲染管线**: PBR (Physically Based Rendering)
+- **通道**: BaseColor, Metallic, Roughness, Normal, AO
+- **光照兼容**: 支持实时阴影和环境光遮罩
+
+### LOD系统
+```
+LOD0: 近距离 (0-20米) - 高精度模型
+LOD1: 中距离 (20-50米) - 中精度模型
+LOD2: 远距离 (50米+) - 低精度模型
+```
+
+## 📱 用户体验规范
+
+### 交互设计原则
+- **直观性**: 操作符合用户习惯
+- **反馈性**: 及时响应用户操作
+- **容错性**: 友好的错误提示
+- **高效性**: 简化操作流程
+
+### 性能指标
+```
+📊 性能标准：
+├── 首次加载: < 3秒
+├── 帧率稳定: 60 FPS
+├── 内存占用: < 100MB
+├── 兼容性: 支持95%设备
+```
+
+### 无障碍访问
+- [ ] **键盘导航**: 支持键盘操作
+- [ ] **屏幕阅读器**: 语义化标签
+- [ ] **高对比度**: 支持主题切换
+- [ ] **字体缩放**: 响应式文字
+
+## 🧪 测试规范
+
+### 测试类型
+- **单元测试**: 工具函数和核心逻辑
+- **集成测试**: 模块间交互
+- **端到端测试**: 完整用户流程
+- **性能测试**: 加载速度和运行性能
+
+### 测试覆盖要求
+```
+🎯 覆盖率目标：
+├── 语句覆盖: > 80%
+├── 分支覆盖: > 75%
+├── 函数覆盖: > 85%
+├── 行覆盖: > 80%
+```
+
+## 🚀 部署规范
+
+### Web版本部署
+```bash
+# 构建命令
+npm run build
+
+# 部署到静态托管
+# GitHub Pages / Vercel / Netlify
+```
+
+### 小程序部署
+```bash
+# 构建命令
+微信开发者工具 -> 上传
+
+# 审核流程
+1. 代码提交
+2. 平台审核 (3-5个工作日)
+3. 通过后发布
+```
+
+### CI/CD流程
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+on:
+  push:
+    branches: [ main ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+```
+
+## 📋 质量保证清单
+
+### 每日检查项
+- [ ] **代码规范**: ESLint通过，无错误
+- [ ] **Git状态**: 提交信息规范，分支正确
+- [ ] **功能测试**: 新功能正常工作
+- [ ] **性能监控**: 无明显性能下降
+
+### 周度检查项
+- [ ] **代码审查**: 完成本周代码审查
+- [ ] **测试覆盖**: 保持测试覆盖率
+- [ ] **文档更新**: 及时更新项目文档
+- [ ] **进度同步**: 与团队成员同步进展
+
+### 里程碑检查项
+- [ ] **功能验收**: 达到里程碑功能要求
+- [ ] **性能评估**: 满足性能指标
+- [ ] **兼容性测试**: 多平台测试通过
+- [ ] **用户测试**: 用户反馈收集和改进
+
+## 📚 文档规范
+
+### 必备文档
+```
+📖 项目文档：
+├── README.md           # 项目介绍
+├── CHANGELOG.md        # 版本更新日志
+├── CONTRIBUTING.md     # 贡献指南
+├── API.md              # API文档
+└── DEPLOYMENT.md       # 部署指南
+```
+
+### 代码文档
+```javascript
+/**
+ * 3D场景管理器
+ * 负责场景的创建、更新和销毁
+ *
+ * @class SceneManager
+ * @param {Object} config - 配置对象
+ * @param {number} config.width - 场景宽度
+ * @param {number} config.height - 场景高度
+ */
+class SceneManager {
+    /**
+     * 初始化场景
+     * @returns {THREE.Scene} Three.js场景对象
+     */
+    initScene() {
+        // 实现代码
+    }
+}
+```
+
+## 🎯 项目目标与里程碑
+
+### 阶段一：MVP版本 (1个月)
+- [ ] 基础3D场景加载
+- [ ] 简单交互控制
+- [ ] 单个建筑模型展示
+- [ ] Web版本部署上线
+
+### 阶段二：功能完善 (2个月)
+- [ ] 多场景切换
+- [ ] 导览系统
+- [ ] 信息展示
+- [ ] 小程序版本
+
+### 阶段三：体验优化 (1个月)
+- [ ] 性能优化
+- [ ] UI/UX改进
+- [ ] 兼容性提升
+- [ ] 用户反馈收集
+
+### 阶段四：扩展开发 (1个月)
+- [ ] 高级功能 (天气系统、动画等)
+- [ ] 第三方集成
+- [ ] 数据分析
+- [ ] 运营准备
+
+## 📞 沟通协作规范
+
+### 团队协作
+- **每日站会**: 15分钟进度同步
+- **周会**: 1小时项目回顾和规划
+- **代码审查**: 所有代码都需要审查
+- **问题跟踪**: 使用GitHub Issues管理
+
+### 沟通工具
+- **项目管理**: GitHub Projects
+- **即时通讯**: 微信/钉钉群
+- **文档协作**: 语雀/Notion
+- **设计协作**: Figma
+
+## 🎖️ 比赛准备规范
+
+### 作品展示标准
+- [ ] **完整性**: 功能完备，可演示
+- [ ] **创新性**: 突出技术亮点
+- [ ] **实用性**: 解决实际问题
+- [ ] **美观性**: 界面设计精美
+
+### 演示文稿要求
+```
+📊 演示内容：
+├── 项目背景与意义
+├── 技术实现方案
+├── 功能演示
+├── 创新亮点
+├── 未来规划
+└── 团队介绍
+```
+
+---
+
+## 📝 附录
+
+### 常用命令
+```bash
+# 项目初始化
+npm install
+
+# 开发服务器
+npm run dev
+
+# 构建生产版本
+npm run build
+
+# 代码检查
+npm run lint
+
+# 测试运行
+npm test
+```
+
+### 资源链接
+- [Three.js官方文档](https://threejs.org/docs/)
+- [微信小程序开发文档](https://developers.weixin.qq.com/miniprogram/dev/)
+- [WebGL规范](https://www.khronos.org/webgl/)
+- [GLTF格式规范](https://www.khronos.org/gltf/)
+
+### 联系方式
+- **项目负责人**: [姓名]
+- **技术支持**: [邮箱]
+- **项目仓库**: [GitHub地址]
+
+---
+
+*遵循这些规范，我们将打造一个高质量、创新性的3D校园云旅游系统！* 🏫✨
