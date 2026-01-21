@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "generated": "2026-01-21T00:00:00Z",
+  "regions": [
+    {
+      "id": "main_gate",
+      "name": "主校门",
+      "bbox": [ -10, 0, -10, 10, 10, 10 ],
+      "lod": {
+        "lod0": "https://cdn.example.com/models/main_gate_lod0.glb",
+        "lod1": "https://cdn.example.com/models/main_gate_lod1.glb",
+        "lod2": "https://cdn.example.com/models/main_gate_lod2.glb"
+      },
+      "priority": 1
+    },
+    {
+      "id": "library",
+      "name": "图书馆",
+      "bbox": [ 20, 0, -5, 60, 30, 25 ],
+      "lod": {
+        "lod0": "https://cdn.example.com/models/library_lod0.glb",
+        "lod1": "https://cdn.example.com/models/library_lod1.glb",
+        "lod2": "https://cdn.example.com/models/library_lod2.glb"
+      },
+      "priority": 2
+    }
+  ]
+}
+
+
