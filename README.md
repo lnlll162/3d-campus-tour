@@ -114,9 +114,16 @@ npm run dev
 
 关于模型拆分、LOD、压缩和托管的详细规范请参阅：`docs/asset_strategy.md`。  
 项目中包含示例文件与脚本：
-- `manifests/campus_manifest.example.json` — manifest 示例，描述各区域 LOD 与 URL。  
-- `web/js/loader.example.js` — Three.js 按需加载与 LOD 演示示例。  
+- `manifests/campus_manifest.example.json` — manifest 示例，描述各区域 LOD 与 URL（包含小程序字段）。  
+- `web/js/loader.example.js` — Three.js 按需加载与 LOD 演示示例（Web 版）。  
+- `web/js/loader.wx.example.js` — 小程序环境下的加载与缓存示例（示意代码）。  
 - `scripts/upload_to_storage_example.sh` — 上传到 S3/OSS/COS 的示例脚本。
+
+小程序注意（简要）
+- 本项目目标是以微信小程序为主要呈现端，**请使用 three-miniprogram / weapp-adapter** 在小程序环境中运行 Three.js。  
+- 小程序不能直接从远端 URL 以 web 的方式加载模型，需要先下载到本地文件系统（`wx.getFileSystemManager()`），然后用本地路径加载。  
+- 在 manifest 中请包含 `platform`、`version` 和 `download_url` 等字段，便于小程序做缓存与更新校验。  
+- 我们在 `MODEL_SPEC.md` 和 `docs/asset_strategy.md` 中有详细的字段说明，请在交付时一并遵守。 
 
 ## 📊 性能指标
 
