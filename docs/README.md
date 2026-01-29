@@ -19,6 +19,11 @@
   - Node.js / Vite 版本兼容问题
   - 常见启动失败原因与解决方案
 
+- [部署指南](../DEPLOYMENT.md)
+  - 国内 OSS/COS + CDN（HTTPS）托管 H5
+  - 微信公众平台配置 web-view 业务域名
+  - 小程序切换 `h5Urls.trial/release` 到国内 HTTPS 域名
+
 - [当前进度与后续步骤](./PROGRESS_AND_NEXT_STEPS.md)
   - 已完成事项
   - 短期/中期任务列表

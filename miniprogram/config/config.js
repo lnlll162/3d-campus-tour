@@ -7,9 +7,9 @@
 const ENV_CONFIG = {
   // H5页面URL配置 - 根据不同环境设置不同的URL
   h5Urls: {
-    develop: 'http://172.20.10.2:5173',          // 本地开发环境（已自动替换为本机局域网 IP）
-    trial: 'https://your-trial-domain.com',    // 体验版环境
-    release: 'https://your-production-domain.com' // 正式版环境
+    develop: 'https://3d-campus-tour.vercel.app',          // 本地开发环境（默认使用 Vercel 预览地址，真机/预览可直接访问）
+    trial: 'https://3d-campus-tour.vercel.app',    // 体验版环境
+    release: 'https://3d-campus-tour.vercel.app' // 正式版环境
   },
 
   // CDN配置 - 用于静态资源
