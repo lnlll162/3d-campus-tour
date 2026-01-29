@@ -1,0 +1,90 @@
+/* 3D校园页面样式 - H5-first架构 */
+
+/* 主容器 */
+.main-container {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  background-color: #f8f8f8;
+}
+
+/* web-view容器 */
+.webview-container {
+  width: 100%;
+  height: 100vh;
+  border: none;
+}
+
+/* 加载状态 */
+.loading {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.loading-text {
+  font-size: 16px;
+  font-weight: 300;
+  text-align: center;
+}
+
+/* 错误状态 */
+.error {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.error-content {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.error-content text {
+  display: block;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.error-desc {
+  font-size: 14px !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  margin-bottom: 4px !important;
+}
+
+/* 动画 */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 隐藏滚动条 */
+::-webkit-scrollbar {
+  display: none;
+}

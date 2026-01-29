@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>3D Campus Test</title>
+</head>
+<body>
+  <h1>3D Campus — Test Page</h1>
+  <p>If you see this page inside the web-view, the web-view can load H5 pages from this host.</p>
+  <script>
+    // Simple runtime check visible in Console
+    console.log('PING from test.html - web-view test page loaded');
+    // also expose a small global for postMessage testing
+    window.__WEBVIEW_TEST = { ready: true, timestamp: Date.now() }
+
+    // PostMessage test: notify parent (mini-program) that the web page loaded
+    console.log('TEST: send postMessage to parent')
+    try {
+      window.parent.postMessage({ type: 'webview_ping', payload: 'hello from web' }, '*')
+      console.log('TEST: postMessage sent')
+    } catch (e) {
+      console.error('postMessage failed', e)
+    }
+  </script>
+</body>
+</html>
+
+

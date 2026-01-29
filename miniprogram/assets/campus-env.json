@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "type": "env-data",
+  "skybox": {
+    "type": "color",
+    "color": [0.5, 0.7, 1.0, 1.0]
+  },
+  "ambient": {
+    "intensity": 0.4,
+    "color": [0.4, 0.4, 0.4]
+  },
+  "directional": {
+    "intensity": 1.0,
+    "color": [1.0, 1.0, 1.0],
+    "direction": [0.5, -0.5, -0.5]
+  },
+  "ibl": {
+    "enabled": false
+  },
+  "fog": {
+    "enabled": true,
+    "color": [0.5, 0.7, 1.0],
+    "near": 50,
+    "far": 200
+  }
+}

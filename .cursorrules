@@ -1,0 +1,532 @@
+# 3D校园云旅游项目开发规范
+
+## 🎯 项目概述
+
+**项目名称**: 3D校园云旅游系统
+**项目目标**: 基于H5-first架构，实现沉浸式3D校园虚拟旅游体验，web-view集成到微信小程序
+**技术栈**: Three.js + Vite + 微信小程序(web-view) + Node.js
+**架构设计**: H5-first开发策略，H5承载所有3D核心功能，小程序仅作为web-view容器
+**目标用户**: 学生、教师、校友、访客
+**当前状态**: 已完成架构重构，从小程序原生3D方案迁移至H5-first方案
+
+## 🏗️ 技术架构规范
+
+### 🔥 H5端 (3D核心 - 主要开发重点)
+- **构建工具**: Vite 5.0+ (现代化开发体验，热重载)
+- **3D引擎**: Three.js r160+ (完整WebGL支持，PBR渲染)
+- **JavaScript**: ES2022+ 现代语法，模块化开发
+- **样式系统**: CSS3 + Flexbox/Grid，响应式设计
+- **开发策略**: H5-first，先在浏览器环境中开发和验证所有功能
+- **性能目标**: 60FPS稳定运行，< 100MB内存占用
+- **兼容性**: 支持95%+现代浏览器，WebGL 2.0
+
+### 📱 小程序端 (web-view容器)
+- **架构角色**: 纯容器，不涉及3D逻辑
+- **web-view**: H5页面嵌入组件
+- **通信机制**: postMessage双向通信桥梁
+- **原生功能**: 权限管理、分享、定位等微信生态功能
+- **配置管理**: 环境自动切换，功能开关控制
+
+### 🎨 3D技术规范
+- **模型格式**: GLTF/GLB (Draco压缩，KTX2纹理)
+- **坐标系**: 右手坐标系，Y轴向上
+- **单位系统**: 米 (1单位 = 1米，真实比例)
+- **渲染管线**: PBR材质，实时阴影，环境光遮罩
+- **LOD系统**: 多层次细节，性能优化
+
+### 开发环境要求
+- **Node.js**: >= 18.17.0 (推荐 20.11.1+ LTS)
+- **npm**: >= 9.0.0 (推荐 10.2.4+)
+- **PowerShell**: Windows PowerShell 7+
+- **微信开发者工具**: 1.06+
+- **浏览器**: Chrome 90+ (WebGL 2.0)
+- **Git**: >= 2.30.0
+
+## 📁 项目结构规范
+
+### 🔥 H5版本结构 (web/ - 主要开发目录)
+```
+web/
+├── index.html                 # 主页面入口 (加载界面 + 3D容器)
+├── src/
+│   ├── main.js               # 应用入口 (WebGL检测 + 初始化)
+│   ├── App.js                # 主应用控制器 (独立于小程序)
+│   ├── scene/                # 3D场景核心模块
+│   │   ├── CampusScene.js    # 校园场景类 (基础建筑 + 地面)
+│   │   ├── BuildingLoader.js # 建筑模型加载器 (GLTF/GLB)
+│   │   ├── CameraController.js # 相机控制器 (轨道控制 + 动画)
+│   │   └── LightingSystem.js  # 光照系统 (PBR光照 + 昼夜循环)
+│   ├── ui/                   # UI组件 (浏览器端独立运行)
+│   │   ├── ControlPanel.js   # 控制面板 (相机控制 + 建筑选择)
+│   │   ├── InfoPanel.js      # 信息面板 (建筑详情 + 导航)
+│   │   └── LoadingScreen.js  # 加载屏幕 (进度显示 + 错误处理)
+│   ├── utils/                # 工具函数
+│   │   ├── PerformanceMonitor.js # 性能监控 (FPS + 内存)
+│   │   └── miniprogram-bridge.js # 小程序通信桥梁 (可选)
+│   └── styles/               # 样式文件
+│       └── main.css          # 主样式 (响应式 + 动画)
+├── package.json              # NPM依赖配置
+├── vite.config.js            # Vite构建配置
+└── dist/                     # 构建输出目录 (CDN部署)
+```
+
+### 📱 微信小程序结构 (miniprogram/ - 容器角色)
+```
+miniprogram/
+├── app.js                    # 小程序入口 (全局配置)
+├── app.json                  # 小程序全局配置
+├── app.wxss                  # 全局样式
+├── config/                   # 配置文件目录
+│   └── config.js             # 环境配置 (URL + 功能开关)
+├── pages/                    # 页面目录
+│   └── campus/               # 主页面 (web-view容器)
+│       ├── campus.js         # 容器逻辑 (通信 + 权限)
+│       ├── campus.wxml       # web-view结构
+│       ├── campus.wxss       # 容器样式
+│       └── campus.json       # 页面配置
+└── project.config.json       # 开发者工具配置
+```
+
+### 🛠️ 工具和配置目录
+```
+scripts/                       # 构建和部署脚本
+├── deploy.js                  # 自动化部署脚本
+docs/                          # 项目文档
+├── DEPLOYMENT.md             # 部署指南
+├── troubleshooting.md        # 问题排查
+└── asset_strategy.md         # 资产管理策略
+```
+
+## 💻 代码风格规范
+
+### JavaScript规范
+```javascript
+// 使用ES6+语法
+// 命名规范
+const camelCaseVariable = '驼峰命名';
+const PascalCaseClass = class {};
+const UPPER_CASE_CONSTANT = '大写常量';
+
+// 函数命名
+function doSomething() {}           // 动词开头
+function getUserData() {}           // 获取数据
+function setUserConfig() {}         // 设置配置
+function isUserLoggedIn() {}        // 布尔值检查
+
+// 注释规范
+/**
+ * 函数功能描述
+ * @param {string} param1 - 参数1描述
+ * @param {number} param2 - 参数2描述
+ * @returns {Object} 返回值描述
+ */
+function exampleFunction(param1, param2) {
+    // 单行注释
+    /*
+     * 多行注释
+     * 用于复杂逻辑说明
+     */
+
+    return result;
+}
+```
+
+### CSS规范
+```css
+/* 组件命名使用BEM规范 */
+.campus-viewer {
+    /* 组件根类 */
+}
+
+.campus-viewer__scene {
+    /* 组件元素 */
+}
+
+.campus-viewer__scene--loading {
+    /* 组件修饰符 */
+}
+
+/* 响应式断点 */
+@media (max-width: 768px) {
+    .campus-viewer {
+        /* 移动端样式 */
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .campus-viewer {
+        /* 平板样式 */
+    }
+}
+
+@media (min-width: 1025px) {
+    .campus-viewer {
+        /* 桌面端样式 */
+    }
+}
+```
+
+### HTML规范
+```html
+<!-- 语义化标签 -->
+<header class="app-header">
+    <h1>3D校园云旅游</h1>
+</header>
+
+<main class="main-content">
+    <section class="campus-section">
+        <!-- 3D渲染容器 -->
+        <div id="viewer-container" class="viewer-container"></div>
+    </section>
+</main>
+
+<footer class="app-footer">
+    <p>&copy; 2024 3D校园云旅游项目</p>
+</footer>
+```
+
+## 🔧 开发流程规范
+
+### Git分支管理
+```
+main                    # 主分支 (生产环境)
+├── develop            # 开发分支
+│   ├── feature/h5-3d-core    # H5 3D核心功能开发
+│   ├── feature/building-system # 建筑系统 (加载/渲染/交互)
+│   ├── feature/camera-system  # 相机系统 (控制/动画)
+│   ├── feature/ui-system      # UI系统 (面板/控制/信息)
+│   ├── feature/lighting-system # 光照系统 (PBR/昼夜)
+│   ├── feature/performance    # 性能优化 (监控/优化)
+│   ├── feature/miniprogram-integration # 小程序集成 (通信/权限)
+│   └── feature/deployment     # 部署系统 (CDN/自动化)
+├── release/v1.0       # 发布分支
+└── hotfix/critical-fix # 热修复分支
+```
+
+### H5-First 开发工作流
+1. **H5核心开发**: 在 `web/` 目录独立开发所有3D功能
+2. **浏览器验证**: 在Chrome中测试3D效果、性能、交互
+3. **功能完善**: 添加UI组件、性能优化、错误处理
+4. **小程序集成**: 配置web-view URL，测试通信桥梁
+5. **联合调试**: 验证权限、分享、定位等原生功能
+6. **部署发布**: 自动化构建部署到CDN，更新小程序配置
+
+### 当前开发阶段
+- ✅ **已完成**: 架构重构，项目结构优化
+- 🔄 **进行中**: H5 3D核心功能开发
+- 📋 **待开始**: 小程序集成测试，部署上线
+
+### 提交信息规范
+```
+feat: 新功能 (新增功能)
+fix: 修复bug (修复问题)
+docs: 文档更新 (文档类改动)
+style: 代码格式 (不影响逻辑的改动)
+refactor: 重构 (重构现有代码)
+perf: 性能优化 (性能相关)
+test: 测试 (测试相关)
+chore: 构建工具 (构建过程或工具配置)
+```
+
+### 代码审查标准
+- [ ] **功能完整性**: 实现需求的所有功能点
+- [ ] **代码质量**: 遵循编码规范，无明显代码异味
+- [ ] **性能表现**: 无明显的性能问题
+- [ ] **错误处理**: 完善的异常处理机制
+- [ ] **测试覆盖**: 核心功能有相应测试
+- [ ] **文档完整**: 重要函数和类有文档注释
+
+## 🎨 3D建模规范
+
+### 模型要求
+- **格式**: GLB/GLTF 优先
+- **单位**: 米 (1单位 = 1米)
+- **坐标系**: 右手坐标系，Y轴向上
+- **面数控制**: 单个建筑 5K-15K面
+- **纹理分辨率**: 主要建筑 2048x2048
+
+### 材质标准
+- **渲染管线**: PBR (Physically Based Rendering)
+- **通道**: BaseColor, Metallic, Roughness, Normal, AO
+- **光照兼容**: 支持实时阴影和环境光遮罩
+
+### LOD系统
+```
+LOD0: 近距离 (0-20米) - 高精度模型
+LOD1: 中距离 (20-50米) - 中精度模型
+LOD2: 远距离 (50米+) - 低精度模型
+```
+
+## 📱 用户体验规范
+
+### 交互设计原则
+- **直观性**: 操作符合用户习惯
+- **反馈性**: 及时响应用户操作
+- **容错性**: 友好的错误提示
+- **高效性**: 简化操作流程
+
+### 性能指标
+```
+📊 性能标准：
+├── 首次加载: < 3秒
+├── 帧率稳定: 60 FPS
+├── 内存占用: < 100MB
+├── 兼容性: 支持95%设备
+```
+
+### 无障碍访问
+- [ ] **键盘导航**: 支持键盘操作
+- [ ] **屏幕阅读器**: 语义化标签
+- [ ] **高对比度**: 支持主题切换
+- [ ] **字体缩放**: 响应式文字
+
+## 🧪 测试规范
+
+### 测试类型
+- **单元测试**: 工具函数和核心逻辑
+- **集成测试**: 模块间交互
+- **端到端测试**: 完整用户流程
+- **性能测试**: 加载速度和运行性能
+
+### 测试覆盖要求
+```
+🎯 覆盖率目标：
+├── 语句覆盖: > 80%
+├── 分支覆盖: > 75%
+├── 函数覆盖: > 85%
+├── 行覆盖: > 80%
+```
+
+## 🚀 部署规范
+
+### Web版本部署
+```bash
+# 构建命令
+npm run build
+
+# 部署到静态托管
+# GitHub Pages / Vercel / Netlify
+```
+
+### 小程序部署
+```bash
+# 构建命令
+微信开发者工具 -> 上传
+
+# 审核流程
+1. 代码提交
+2. 平台审核 (3-5个工作日)
+3. 通过后发布
+```
+
+### CI/CD流程
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+on:
+  push:
+    branches: [ main ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+```
+
+## 📋 质量保证清单
+
+### 每日检查项
+- [ ] **代码规范**: ESLint通过，无错误
+- [ ] **Git状态**: 提交信息规范，分支正确
+- [ ] **功能测试**: 新功能正常工作
+- [ ] **性能监控**: 无明显性能下降
+
+### 周度检查项
+- [ ] **代码审查**: 完成本周代码审查
+- [ ] **测试覆盖**: 保持测试覆盖率
+- [ ] **文档更新**: 及时更新项目文档
+- [ ] **进度同步**: 与团队成员同步进展
+
+### 里程碑检查项
+- [ ] **功能验收**: 达到里程碑功能要求
+- [ ] **性能评估**: 满足性能指标
+- [ ] **兼容性测试**: 多平台测试通过
+- [ ] **用户测试**: 用户反馈收集和改进
+
+## 📚 文档规范
+
+### 必备文档
+```
+📖 项目文档：
+├── README.md           # 项目介绍
+├── CHANGELOG.md        # 版本更新日志
+├── CONTRIBUTING.md     # 贡献指南
+├── API.md              # API文档
+└── DEPLOYMENT.md       # 部署指南
+```
+
+### 代码文档
+```javascript
+/**
+ * 3D场景管理器
+ * 负责场景的创建、更新和销毁
+ *
+ * @class SceneManager
+ * @param {Object} config - 配置对象
+ * @param {number} config.width - 场景宽度
+ * @param {number} config.height - 场景高度
+ */
+class SceneManager {
+    /**
+     * 初始化场景
+     * @returns {THREE.Scene} Three.js场景对象
+     */
+    initScene() {
+        // 实现代码
+    }
+}
+```
+
+## 🎯 项目目标与里程碑
+
+### 已完成 ✅
+- [x] **架构重构**: 从小程序原生3D迁移至H5-first方案
+- [x] **项目结构优化**: 清晰的H5/小程序分离架构
+- [x] **开发环境搭建**: Vite + Three.js现代化工具链
+- [x] **基础框架**: 场景系统、UI组件、通信桥梁
+- [x] **部署系统**: 自动化构建和CDN部署脚本
+
+### 阶段一：H5 3D核心功能开发 (当前阶段)
+- [x] Three.js基础场景搭建 (场景/相机/渲染器/控制器)
+- [x] 建筑系统基础实现 (几何体创建/材质/阴影)
+- [ ] **进行中**: 建筑模型加载器 (GLTF/GLB支持)
+- [ ] **进行中**: 相机控制系统优化 (动画/约束/交互)
+- [ ] 光照系统实现 (PBR/昼夜循环/建筑特效光)
+- [ ] UI组件完善 (控制面板/信息面板/帮助系统)
+- [ ] 性能监控和优化 (FPS监控/内存管理/LOD)
+
+### 阶段二：小程序集成与测试 (1-2周)
+- [ ] web-view容器配置和测试
+- [ ] 双向通信桥梁验证 (消息传递/权限处理)
+- [ ] 原生功能集成 (定位/分享/振动反馈)
+- [ ] 多环境配置测试 (开发/体验版/正式版)
+- [ ] 错误处理和降级方案
+
+### 阶段三：部署与发布 (1周)
+- [ ] CDN部署配置 (阿里云/腾讯/AWS)
+- [ ] 小程序审核提交
+- [ ] 生产环境监控
+- [ ] 用户反馈收集
+- [ ] 性能数据分析
+
+## 📞 沟通协作规范
+
+### 团队协作
+- **每日站会**: 15分钟进度同步
+- **周会**: 1小时项目回顾和规划
+- **代码审查**: 所有代码都需要审查
+- **问题跟踪**: 使用GitHub Issues管理
+
+### 沟通工具
+- **项目管理**: GitHub Projects
+- **即时通讯**: 微信/钉钉群
+- **文档协作**: 语雀/Notion
+- **设计协作**: Figma
+
+## 🎖️ 比赛准备规范
+
+### 作品展示标准
+- [ ] **完整性**: 功能完备，可演示
+- [ ] **创新性**: 突出技术亮点
+- [ ] **实用性**: 解决实际问题
+- [ ] **美观性**: 界面设计精美
+
+### 演示文稿要求
+```
+📊 演示内容：
+├── 项目背景与意义
+├── 技术实现方案
+├── 功能演示
+├── 创新亮点
+├── 未来规划
+└── 团队介绍
+```
+
+---
+
+## 📝 附录
+
+### 常用命令
+```bash
+# 项目初始化
+npm install
+
+# H5开发 (主要开发命令)
+npm run web:dev         # 启动H5开发服务器 (http://localhost:5173)
+npm run web:build       # 构建H5生产版本
+npm run web:preview     # 预览构建结果
+
+# 部署相关
+npm run deploy          # 交互式部署选择
+npm run deploy:aliyun   # 部署到阿里云OSS
+npm run deploy:tencent  # 部署到腾讯COS
+npm run deploy:aws      # 部署到AWS S3
+
+# 代码质量
+npm run lint            # ESLint代码检查
+
+# 小程序开发辅助
+npm run miniprogram:dev # 打开小程序开发者工具
+```
+
+### H5开发快速上手
+
+#### 1. 启动开发环境
+```bash
+cd web
+npm install
+npm run dev
+```
+访问 `http://localhost:5173` 开始开发
+
+#### 2. 核心文件说明
+- `src/App.js` - 主应用控制器 (独立运行，不依赖小程序)
+- `src/scene/CampusScene.js` - 3D场景实现 (建筑/地面/光照)
+- `src/ui/` - UI组件 (控制面板/信息面板/加载屏幕)
+- `src/utils/PerformanceMonitor.js` - 性能监控工具
+
+#### 3. 开发原则
+- **H5优先**: 所有功能先在浏览器中开发和测试
+- **渐进增强**: 核心3D功能完整，额外功能可选
+- **性能优先**: 保持60FPS，内存控制在100MB以内
+- **模块化**: 每个功能模块独立，便于测试和维护
+
+#### 4. 调试技巧
+- 按 `P` 显示性能面板
+- 按 `R` 重置相机视角
+- 按 `F` 全屏模式
+- 按 `H` 显示帮助信息
+
+### 资源链接
+- [Three.js官方文档](https://threejs.org/docs/)
+- [微信小程序web-view](https://developers.weixin.qq.com/miniprogram/dev/component/web-view.html)
+- [WebGL规范](https://www.khronos.org/webgl/)
+- [GLTF格式规范](https://www.khronos.org/gltf/)
+- [Vite构建工具](https://cn.vitejs.dev/)
+
+### 联系方式
+- **项目负责人**: [姓名]
+- **技术支持**: [邮箱]
+- **项目仓库**: [GitHub地址]
+
+---
+
+*遵循这些规范，我们将打造一个高质量、创新性的3D校园云旅游系统！* 🏫✨

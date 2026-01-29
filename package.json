@@ -1,0 +1,47 @@
+{
+  "name": "3d-campus-tour",
+  "version": "1.0.0",
+  "description": "3D校园云旅游系统 - H5-first架构",
+  "main": "index.js",
+  "scripts": {
+    "web:dev": "cd web && npm run dev",
+    "web:build": "cd web && npm run build",
+    "web:preview": "cd web && npm run preview",
+    "web:install": "cd web && npm install",
+    "miniprogram:dev": "微信开发者工具打开 miniprogram 目录",
+    "clean": "rm -rf node_modules web/node_modules miniprogram/node_modules",
+    "install:all": "npm run web:install",
+    "build:all": "npm run web:build",
+    "deploy": "node scripts/deploy.js",
+    "deploy:aliyun": "node scripts/deploy.js aliyun",
+    "deploy:tencent": "node scripts/deploy.js tencent",
+    "deploy:aws": "node scripts/deploy.js aws",
+    "lint": "cd web && npm run lint",
+    "test": "echo \"暂无测试\" && exit 0"
+  },
+  "keywords": [
+    "3d",
+    "campus",
+    "tour",
+    "three.js",
+    "webgl",
+    "miniprogram",
+    "vue",
+    "education"
+  ],
+  "author": "李宁",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/3d-campus-tour.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/3d-campus-tour/issues"
+  },
+  "homepage": "https://github.com/your-username/3d-campus-tour#readme",
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

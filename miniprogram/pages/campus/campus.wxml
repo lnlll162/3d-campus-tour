@@ -1,0 +1,30 @@
+<!-- 3D校园场景页面 - H5-first架构 -->
+
+<!-- web-view不支持状态 -->
+<view wx:if="{{!canUseWebView}}" class="error">
+  <view class="error-content">
+    <text class="error-icon">⚠️</text>
+    <text>功能不可用</text>
+    <text class="error-desc">您的微信版本不支持此功能</text>
+    <text class="error-desc">请升级微信到最新版本</text>
+  </view>
+</view>
+
+<!-- 主要内容区域：始终渲染 web-view，使用覆盖层显示加载状态 -->
+<view wx:else class="main-container">
+  <!-- H5页面web-view容器（始终存在，避免条件渲染阻止加载） -->
+  <web-view
+    id="webview"
+    class="webview-container"
+    src="{{webviewSrc}}"
+    bindload="onWebViewLoad"
+    binderror="onWebViewError"
+    bindmessage="onWebViewMessage"
+  ></web-view>
+
+  <!-- 加载覆盖层（在 web-view 上方显示加载动画） -->
+  <view wx:if="{{showLoading}}" class="loading-overlay">
+    <view class="loading-spinner"></view>
+    <view class="loading-text">{{loadingText}}</view>
+  </view>
+</view>

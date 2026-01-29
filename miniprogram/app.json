@@ -1,0 +1,27 @@
+{
+  "pages": [
+    "pages/campus/campus"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "3D校园云旅游",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f8f8f8"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于校园定位服务和路径规划"
+    }
+  },
+  "requiredBackgroundModes": [],
+  "networkTimeout": {
+    "request": 60000,
+    "downloadFile": 60000
+  },
+  "lazyCodeLoading": "requiredComponents",
+  "debug": false,
+  "requiredPrivateInfos": [
+    "getLocation"
+  ]
+}

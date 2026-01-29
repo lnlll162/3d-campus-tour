@@ -1,0 +1,15 @@
+{
+  "name": "3d-campus-miniprogram",
+  "version": "1.0.0",
+  "description": "基于web-view+H5的3D校园云旅游系统小程序容器",
+  "main": "app.js",
+  "scripts": {
+    "dev": "echo '请使用微信开发者工具进行开发'",
+    "build": "echo '请使用微信开发者工具进行构建'"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": ["3d", "campus", "web-view", "h5", "weapp", "miniprogram"],
+  "author": "3D Campus Team",
+  "license": "MIT"
+}
