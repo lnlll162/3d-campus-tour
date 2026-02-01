@@ -119,6 +119,7 @@ export class CampusApp {
     this.controlPanel.on('toggleShadows', (enabled) => this.toggleShadows(enabled))
     this.controlPanel.on('toggleBuildings', (enabled) => this.toggleBuildings(enabled))
     this.controlPanel.on('toggleGround', (enabled) => this.toggleGround(enabled))
+    this.controlPanel.on('setViewMode', (mode) => this.setViewMode(mode))
 
     // 信息面板
     this.infoPanel = new InfoPanel(app)
@@ -163,6 +164,7 @@ export class CampusApp {
     this.controlPanel.on('toggleShadows', (enabled) => this.toggleShadows(enabled))
     this.controlPanel.on('toggleBuildings', (enabled) => this.toggleBuildings(enabled))
     this.controlPanel.on('toggleGround', (enabled) => this.toggleGround(enabled))
+    this.controlPanel.on('setViewMode', (mode) => this.setViewMode(mode))
 
     // 信息面板
     this.infoPanel = new InfoPanel(app)
@@ -346,6 +348,17 @@ export class CampusApp {
         }
       })
       console.log(`🌱 地面显示: ${enabled ? '开启' : '关闭'}`)
+    }
+  }
+
+  /**
+   * 设置视角模式
+   */
+  setViewMode(mode) {
+    console.log('CampusApp: setViewMode called', mode)
+    if (this.scene) {
+      this.scene.setViewMode(mode)
+      console.log(`🕹️ 视角模式切换为: ${mode}`)
     }
   }
 

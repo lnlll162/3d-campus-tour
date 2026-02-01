@@ -39,12 +39,34 @@ logs/
 .env.test.local
 .env.production.local
 
-# 3D模型缓存（大文件请用CDN）
-models/cache/
+# 3D模型与产物
+# - 运行时模型请放到 web/public/models（需要入库，便于 Vite/Vercel 部署）
+# - 源模型/处理产物请放到 web/models（不入库）
+web/models/
+
+# 默认忽略大模型扩展（避免误提交）
+*.glb
+*.gltf
+*.bin
+*.ktx2
+*.basis
+
+# 允许提交运行时模型（Vite public）
+!web/public/models/
+!web/public/models/**/*
+
 *.temp
 
 # 微信小程序
 project.private.config.json
+
+# 个人文件/Office 文档
+*.doc
+*.docx
+*.ppt
+*.pptx
+*.xls
+*.xlsx
 
 # 截图和临时文件
 screenshots/

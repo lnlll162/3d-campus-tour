@@ -25,6 +25,15 @@ export class ControlPanel {
       </div>
       <div class="panel-content">
         <div class="control-group">
+          <label>视角模式</label>
+          <select id="view-mode" class="building-select">
+            <option value="orbit">Orbit（环绕）</option>
+            <option value="fpv">第一人称</option>
+            <option value="tpv">第三人称</option>
+          </select>
+        </div>
+
+        <div class="control-group">
           <label>相机控制</label>
           <div class="button-group">
             <button id="reset-camera" class="control-btn">重置视角</button>
@@ -112,6 +121,12 @@ export class ControlPanel {
 
     this.panel.querySelector('#side-view').addEventListener('click', () => {
       this.emit('sideView')
+    })
+
+    // 视角模式
+    this.panel.querySelector('#view-mode').addEventListener('change', (e) => {
+      console.log('ControlPanel: setViewMode emitted', e.target.value)
+      this.emit('setViewMode', e.target.value)
     })
 
     // 建筑控制

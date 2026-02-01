@@ -57,6 +57,387 @@ export class CampusScene {
     this.controls.update()
   }
 
+  setViewMode(mode) {
+    console.log('CampusScene: setViewMode', mode)
+    if (!mode) return
+
+    // 清理旧模式
+    this.cleanupViewMode()
+
+    this.viewMode = mode
+
+    if (mode === 'orbit') {
+      this.enableOrbitMode()
+    } else if (mode === 'fpv') {
+      this.enableFirstPersonMode()
+    } else if (mode === 'tpv') {
+      this.enableThirdPersonMode()
+    }
+  }
+
+  cleanupViewMode() {
+    // 移除第一/第三人称的事件监听和摇杆
+    if (this._fpvCleanup) {
+      try { this._fpvCleanup() } catch (_) {}
+    }
+    this._fpvCleanup = null
+
+    if (this._tpvCleanup) {
+      try { this._tpvCleanup() } catch (_) {}
+    }
+    this._tpvCleanup = null
+
+    if (this.joystickEl && this.joystickEl.parentNode) {
+      this.joystickEl.parentNode.removeChild(this.joystickEl)
+    }
+    this.joystickEl = null
+
+    // 重置鼠标样式
+    if (this.renderer?.domElement) {
+      this.renderer.domElement.style.cursor = 'grab'
+    }
+  }
+
+  enableOrbitMode() {
+    if (!this.camera || !this.renderer) return
+
+    // OrbitControls 已存在就复用，否则创建
+    if (!this.controls) {
+      this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+      this.controls.enableDamping = true
+      this.controls.dampingFactor = 0.05
+      this.controls.minPolarAngle = 0
+      this.controls.maxPolarAngle = Math.PI * 0.99
+      this.controls.minDistance = 1
+      this.controls.maxDistance = 300
+    }
+
+    this.controls.enabled = true
+  }
+
+  enableFirstPersonMode() {
+    if (!this.camera || !this.renderer) return
+
+    // 禁用 orbit
+    if (this.controls) this.controls.enabled = false
+
+    const canvas = this.renderer.domElement
+
+    // 第一人称状态
+    this.fpv = {
+      yaw: 0,
+      pitch: 0,
+      moveForward: false,
+      moveBackward: false,
+      moveLeft: false,
+      moveRight: false,
+      speed: 10,
+      height: 1.6,
+      lookSensitivity: 0.002,
+      joystick: { x: 0, y: 0 }
+    }
+
+    // 初始化相机高度
+    this.camera.position.y = Math.max(this.camera.position.y, this.fpv.height)
+
+    // 鼠标拖动看向（不强制 pointer lock，兼容 web-view）
+    let dragging = false
+    let lastX = 0
+    let lastY = 0
+
+    const onMouseDown = (e) => {
+      dragging = true
+      lastX = e.clientX
+      lastY = e.clientY
+    }
+
+    const onMouseUp = () => { dragging = false }
+
+    const onMouseMove = (e) => {
+      if (!dragging) return
+      const dx = e.clientX - lastX
+      const dy = e.clientY - lastY
+      lastX = e.clientX
+      lastY = e.clientY
+
+      this.fpv.yaw -= dx * this.fpv.lookSensitivity
+      this.fpv.pitch -= dy * this.fpv.lookSensitivity
+      const limit = Math.PI / 2 - 0.01
+      this.fpv.pitch = Math.max(-limit, Math.min(limit, this.fpv.pitch))
+    }
+
+    // 键盘移动
+    const onKeyDown = (e) => {
+      switch (e.key.toLowerCase()) {
+        case 'w': this.fpv.moveForward = true; break
+        case 's': this.fpv.moveBackward = true; break
+        case 'a': this.fpv.moveLeft = true; break
+        case 'd': this.fpv.moveRight = true; break
+      }
+    }
+
+    const onKeyUp = (e) => {
+      switch (e.key.toLowerCase()) {
+        case 'w': this.fpv.moveForward = false; break
+        case 's': this.fpv.moveBackward = false; break
+        case 'a': this.fpv.moveLeft = false; break
+        case 'd': this.fpv.moveRight = false; break
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
+    canvas.addEventListener('mousedown', onMouseDown)
+    window.addEventListener('mouseup', onMouseUp)
+    window.addEventListener('mousemove', onMouseMove)
+
+    // 移动端虚拟摇杆
+    this.createJoystick((x, y) => {
+      if (this.fpv) {
+        this.fpv.joystick.x = x
+        this.fpv.joystick.y = y
+      }
+    })
+
+    this._fpvCleanup = () => {
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
+      canvas.removeEventListener('mousedown', onMouseDown)
+      window.removeEventListener('mouseup', onMouseUp)
+      window.removeEventListener('mousemove', onMouseMove)
+      this.fpv = null
+    }
+  }
+
+  updateFirstPerson(dt) {
+    if (!this.fpv || !this.camera) return
+
+    // 方向向量（只绕 Y 轴）
+    const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.fpv.yaw)
+    const right = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.fpv.yaw)
+
+    // 键盘 + 摇杆（摇杆 y 为向上负值，这里取反更符合直觉）
+    const joyX = this.fpv.joystick?.x || 0
+    const joyY = this.fpv.joystick?.y || 0
+
+    let moveZ = 0
+    let moveX = 0
+
+    if (this.fpv.moveForward) moveZ += 1
+    if (this.fpv.moveBackward) moveZ -= 1
+    if (this.fpv.moveRight) moveX += 1
+    if (this.fpv.moveLeft) moveX -= 1
+
+    moveX += joyX
+    moveZ += -joyY
+
+    const move = new THREE.Vector3()
+    move.addScaledVector(forward, moveZ)
+    move.addScaledVector(right, moveX)
+
+    if (move.lengthSq() > 1e-6) {
+      move.normalize().multiplyScalar(this.fpv.speed * dt)
+      this.camera.position.add(move)
+    }
+
+    // 固定人眼高度
+    this.camera.position.y = this.fpv.height
+
+    // 应用视角（yaw/pitch）
+    const euler = new THREE.Euler(this.fpv.pitch, this.fpv.yaw, 0, 'YXZ')
+    this.camera.quaternion.setFromEuler(euler)
+  }
+
+  updateThirdPerson(dt) {
+    if (!this.tpv || !this.camera) return
+
+    const { avatar } = this.tpv
+
+    // 计算移动方向（基于 yaw）
+    const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.tpv.yaw)
+    const right = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), this.tpv.yaw)
+
+    const joyX = this.tpv.joystick?.x || 0
+    const joyY = this.tpv.joystick?.y || 0
+
+    let moveZ = 0
+    let moveX = 0
+
+    if (this.tpv.moveForward) moveZ += 1
+    if (this.tpv.moveBackward) moveZ -= 1
+    if (this.tpv.moveRight) moveX += 1
+    if (this.tpv.moveLeft) moveX -= 1
+
+    moveX += joyX
+    moveZ += -joyY
+
+    const move = new THREE.Vector3()
+    move.addScaledVector(forward, moveZ)
+    move.addScaledVector(right, moveX)
+
+    if (move.lengthSq() > 1e-6) {
+      move.normalize().multiplyScalar(this.tpv.speed * dt)
+      avatar.position.add(move)
+    }
+
+    // 角色朝向
+    avatar.rotation.y = this.tpv.yaw
+
+    // 相机跟随
+    const camOffset = new THREE.Vector3(0, this.tpv.followHeight, this.tpv.followDistance)
+      .applyAxisAngle(new THREE.Vector3(0, 1, 0), this.tpv.yaw)
+
+    const desired = avatar.position.clone().add(camOffset)
+    this.camera.position.lerp(desired, 0.15)
+    this.camera.lookAt(avatar.position.x, avatar.position.y + 1.2, avatar.position.z)
+  }
+
+  enableThirdPersonMode() {
+    if (!this.camera || !this.renderer || !this.scene) return
+
+    // 禁用 orbit
+    if (this.controls) this.controls.enabled = false
+
+    // 创建一个占位“角色”
+    const geo = new THREE.CapsuleGeometry(0.3, 1.0, 4, 8)
+    const mat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 1, metalness: 0 })
+    const avatar = new THREE.Mesh(geo, mat)
+    avatar.castShadow = true
+    avatar.position.set(0, 0.8, 0)
+    avatar.userData.type = 'avatar'
+    this.scene.add(avatar)
+
+    this.tpv = {
+      avatar,
+      speed: 8,
+      height: 1.6,
+      followDistance: 4,
+      followHeight: 2.2,
+      yaw: 0,
+      joystick: { x: 0, y: 0 },
+      moveForward: false,
+      moveBackward: false,
+      moveLeft: false,
+      moveRight: false
+    }
+
+    // 键盘移动
+    const onKeyDown = (e) => {
+      switch (e.key.toLowerCase()) {
+        case 'w': this.tpv.moveForward = true; break
+        case 's': this.tpv.moveBackward = true; break
+        case 'a': this.tpv.moveLeft = true; break
+        case 'd': this.tpv.moveRight = true; break
+      }
+    }
+
+    const onKeyUp = (e) => {
+      switch (e.key.toLowerCase()) {
+        case 'w': this.tpv.moveForward = false; break
+        case 's': this.tpv.moveBackward = false; break
+        case 'a': this.tpv.moveLeft = false; break
+        case 'd': this.tpv.moveRight = false; break
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
+
+    // 右侧拖动改变朝向（简单实现）
+    const canvas = this.renderer.domElement
+    let dragging = false
+    let lastX = 0
+    const onMouseDown = (e) => { dragging = true; lastX = e.clientX }
+    const onMouseUp = () => { dragging = false }
+    const onMouseMove = (e) => {
+      if (!dragging) return
+      const dx = e.clientX - lastX
+      lastX = e.clientX
+      this.tpv.yaw -= dx * 0.003
+    }
+
+    canvas.addEventListener('mousedown', onMouseDown)
+    window.addEventListener('mouseup', onMouseUp)
+    window.addEventListener('mousemove', onMouseMove)
+
+    // 移动端虚拟摇杆
+    this.createJoystick((x, y) => {
+      if (this.tpv) {
+        this.tpv.joystick.x = x
+        this.tpv.joystick.y = y
+      }
+    })
+
+    this._tpvCleanup = () => {
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
+      canvas.removeEventListener('mousedown', onMouseDown)
+      window.removeEventListener('mouseup', onMouseUp)
+      window.removeEventListener('mousemove', onMouseMove)
+      if (avatar.parent) avatar.parent.remove(avatar)
+      geo.dispose()
+      mat.dispose()
+      this.tpv = null
+    }
+  }
+
+  createJoystick(onMove) {
+    if (!('ontouchstart' in window)) return
+    if (!this.container) {
+      this.container = document.getElementById('app') || document.body
+    }
+
+    const el = document.createElement('div')
+    el.style.cssText = `position:fixed;left:20px;bottom:20px;width:120px;height:120px;border-radius:60px;background:rgba(0,0,0,0.2);z-index:9999;touch-action:none;`
+
+    const stick = document.createElement('div')
+    stick.style.cssText = `position:absolute;left:40px;top:40px;width:40px;height:40px;border-radius:20px;background:rgba(255,255,255,0.6);`
+    el.appendChild(stick)
+
+    const radius = 50
+    let active = false
+    let startX = 0
+    let startY = 0
+
+    const setStick = (dx, dy) => {
+      const len = Math.hypot(dx, dy)
+      const clamped = len > radius ? radius / len : 1
+      const x = dx * clamped
+      const y = dy * clamped
+      stick.style.transform = `translate(${x}px, ${y}px)`
+      onMove(x / radius, y / radius)
+    }
+
+    const reset = () => {
+      stick.style.transform = 'translate(0px, 0px)'
+      onMove(0, 0)
+    }
+
+    el.addEventListener('touchstart', (e) => {
+      const t = e.touches[0]
+      active = true
+      startX = t.clientX
+      startY = t.clientY
+      e.preventDefault()
+    }, { passive: false })
+
+    el.addEventListener('touchmove', (e) => {
+      if (!active) return
+      const t = e.touches[0]
+      setStick(t.clientX - startX, t.clientY - startY)
+      e.preventDefault()
+    }, { passive: false })
+
+    el.addEventListener('touchend', (e) => {
+      active = false
+      reset()
+      e.preventDefault()
+    }, { passive: false })
+
+    this.container.appendChild(el)
+    this.joystickEl = el
+  }
+
   constructor() {
     this.scene = null
     this.camera = null
@@ -86,6 +467,9 @@ export class CampusScene {
       this.createControls()
       this.createGround()
       await this.loadBuildings()
+
+      // 默认视角模式
+      this.setViewMode('orbit')
 
       // 添加到DOM
       const app = document.getElementById('app')
@@ -191,18 +575,33 @@ export class CampusScene {
   }
 
   async loadBuildings() {
-    // 优先加载本地GLB模型（开发阶段）
-    try {
-      await this.loadSingleCampusModel('/models/library.glb')
-      return
-    } catch (error) {
-      const message = this.formatModelLoadError(error, '/models/library.glb')
-      console.error(message, error)
-      this.showError(message)
+    // 开发阶段：加载本地建筑清单（每个建筑一个 GLB）
+    const buildings = [
+      { id: 'library', name: '图书馆', url: '/models/library.glb' },
+      { id: 'east_gate', name: '东门', url: '/models/east-gate.glb' }
+    ]
+
+    const failed = []
+
+    for (const b of buildings) {
+      try {
+        await this.loadSingleCampusModel(b.url, { id: b.id, name: b.name })
+      } catch (error) {
+        failed.push({ building: b, error })
+        const message = this.formatModelLoadError(error, b.url)
+        console.error(message, error)
+      }
     }
 
-    // 回退：创建一些基础的建筑作为示例
-    await this.createSampleBuildings()
+    if (failed.length > 0) {
+      const msg = `部分模型加载失败（已加载 ${buildings.length - failed.length}/${buildings.length}）：\n` + failed.map(f => `- ${f.building.name}: ${f.building.url}`).join('\n')
+      this.showError(msg)
+    }
+
+    // 如果一个都没加载成功，则回退到示例建筑
+    if (this.buildings.size === 0) {
+      await this.createSampleBuildings()
+    }
   }
 
   async createSampleBuildings() {
@@ -218,7 +617,7 @@ export class CampusScene {
     }
   }
 
-  async loadSingleCampusModel(url) {
+  async loadSingleCampusModel(url, meta = {}) {
     if (!this.scene) return
 
     const loader = new BuildingLoader()
@@ -253,13 +652,13 @@ export class CampusScene {
     modelRoot.position.y -= boxAfter.min.y
 
     modelRoot.userData = {
-      id: 'library',
-      name: '图书馆',
+      id: meta.id || 'library',
+      name: meta.name || '图书馆',
       type: 'building'
     }
 
     this.scene.add(modelRoot)
-    this.buildings.set('library', modelRoot)
+    this.buildings.set(modelRoot.userData.id, modelRoot)
 
     console.log(`🏛️ 已加载模型: ${url}`, { size: size.toArray(), center: center.toArray(), scale })
 
@@ -298,8 +697,20 @@ export class CampusScene {
   render() {
     if (!this.isInitialized) return
 
+    const now = performance.now()
+    if (!this._lastFrameTime) this._lastFrameTime = now
+    const dt = Math.min((now - this._lastFrameTime) / 1000, 0.05)
+    this._lastFrameTime = now
+
+    // 模式更新
+    if (this.viewMode === 'fpv') {
+      this.updateFirstPerson(dt)
+    } else if (this.viewMode === 'tpv') {
+      this.updateThirdPerson(dt)
+    }
+
     // 更新控制器
-    if (this.controls) {
+    if (this.controls && this.controls.enabled) {
       this.controls.update()
     }
 
