@@ -113,7 +113,7 @@
   align-items: center;
 
   background:
-    linear-gradient(90deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.90) 55%, rgba(255,255,255,0.80) 100%),
+    linear-gradient(90deg, rgba(255,255,255,0.90) 0%, rgba(255,255,255,0.82) 55%, rgba(255,255,255,0.72) 100%),
     url('/images/新东门.jpg') right center / cover no-repeat;
   border: 1px solid rgba(15, 23, 42, 0.06);
 }

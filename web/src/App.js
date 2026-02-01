@@ -48,8 +48,6 @@ export class CampusApp {
       this.isInitialized = true
       console.log('✅ 3D校园应用初始化完成')
 
-      // 显示欢迎信息
-      this.showWelcomeMessage()
 
     } catch (error) {
       console.error('❌ 应用初始化失败:', error)
@@ -116,6 +114,7 @@ export class CampusApp {
     this.controlPanel.on('focusBuilding', (buildingId) => this.focusBuilding(buildingId))
     this.controlPanel.on('setTime', (hour) => this.setTime(hour))
     this.controlPanel.on('toggleDayNightCycle', (enabled) => this.toggleDayNightCycle(enabled))
+    this.controlPanel.on('toggleFollowRealTime', (enabled) => this.toggleFollowRealTime(enabled))
     this.controlPanel.on('toggleShadows', (enabled) => this.toggleShadows(enabled))
     this.controlPanel.on('toggleBuildings', (enabled) => this.toggleBuildings(enabled))
     this.controlPanel.on('toggleGround', (enabled) => this.toggleGround(enabled))
@@ -161,6 +160,7 @@ export class CampusApp {
     this.controlPanel.on('focusBuilding', (buildingId) => this.focusBuilding(buildingId))
     this.controlPanel.on('setTime', (hour) => this.setTime(hour))
     this.controlPanel.on('toggleDayNightCycle', (enabled) => this.toggleDayNightCycle(enabled))
+    this.controlPanel.on('toggleFollowRealTime', (enabled) => this.toggleFollowRealTime(enabled))
     this.controlPanel.on('toggleShadows', (enabled) => this.toggleShadows(enabled))
     this.controlPanel.on('toggleBuildings', (enabled) => this.toggleBuildings(enabled))
     this.controlPanel.on('toggleGround', (enabled) => this.toggleGround(enabled))
@@ -189,6 +189,21 @@ export class CampusApp {
       // 更新模型数量
       const modelCount = this.scene ? this.scene.buildings.size : 0
       this.controlPanel.updateModelCount(modelCount)
+
+      // 同步时间显示/滑块（昼夜循环开启时更直观）
+      if (this.scene && this.scene.getTimeOfDay && this.scene.dayNightCycleEnabled) {
+        this.controlPanel.setTime(this.scene.getTimeOfDay())
+      }
+
+      // 同步开关状态
+      if (this.scene) {
+        if (this.controlPanel.setDayNightCycleEnabled) {
+          this.controlPanel.setDayNightCycleEnabled(!!this.scene.dayNightCycleEnabled)
+        }
+        if (this.controlPanel.setFollowRealTimeEnabled) {
+          this.controlPanel.setFollowRealTimeEnabled(!!this.scene.followRealTimeEnabled)
+        }
+      }
     }
   }
 
@@ -298,7 +313,9 @@ export class CampusApp {
    * 设置时间（昼夜循环）
    */
   setTime(hour) {
-    // TODO: 实现时间设置功能
+    if (this.scene && this.scene.setTimeOfDay) {
+      this.scene.setTimeOfDay(hour)
+    }
     console.log(`🕐 时间设置为: ${hour}:00`)
   }
 
@@ -306,8 +323,17 @@ export class CampusApp {
    * 切换昼夜循环
    */
   toggleDayNightCycle(enabled) {
-    // TODO: 实现昼夜循环切换
+    if (this.scene && this.scene.setDayNightCycleEnabled) {
+      this.scene.setDayNightCycleEnabled(enabled)
+    }
     console.log(`🌅 昼夜循环: ${enabled ? '开启' : '关闭'}`)
+  }
+
+  toggleFollowRealTime(enabled) {
+    if (this.scene && this.scene.setFollowRealTimeEnabled) {
+      this.scene.setFollowRealTimeEnabled(enabled)
+    }
+    console.log(`🕒 跟随系统时间: ${enabled ? '开启' : '关闭'}`)
   }
 
   /**

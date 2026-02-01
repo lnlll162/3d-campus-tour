@@ -5,10 +5,19 @@
 export class ControlPanel {
   constructor(container) {
     this.container = container
-    this.isVisible = true
+    this.isVisible = false
     this.callbacks = {}
 
     this.createPanel()
+
+    if (this.isVisible) {
+      this.panel.classList.add('is-expanded')
+    } else {
+      this.panel.classList.remove('is-expanded')
+      const toggleBtn = this.panel.querySelector('#toggle-panel')
+      if (toggleBtn) toggleBtn.textContent = '展开'
+    }
+
     this.setupEventListeners()
   }
 
@@ -20,13 +29,14 @@ export class ControlPanel {
     this.panel.className = 'control-panel'
     this.panel.innerHTML = `
       <div class="panel-header">
-        <h3>控制面板</h3>
-        <button class="toggle-btn" id="toggle-panel">−</button>
+        <div class="panel-title">控制面板</div>
+        <button class="toggle-btn" id="toggle-panel" aria-label="展开/折叠">展开</button>
       </div>
-      <div class="panel-content">
-        <div class="control-group">
-          <label>视角模式</label>
-          <select id="view-mode" class="building-select">
+      <div class="panel-body">
+        <div class="panel-content">
+          <div class="control-group">
+            <label>视角模式</label>
+            <select id="view-mode" class="building-select">
             <option value="orbit">Orbit（环绕）</option>
             <option value="fpv">第一人称</option>
             <option value="tpv">第三人称</option>
@@ -36,23 +46,12 @@ export class ControlPanel {
         <div class="control-group">
           <label>相机控制</label>
           <div class="button-group">
-            <button id="reset-camera" class="control-btn">重置视角</button>
-            <button id="top-view" class="control-btn">俯视</button>
-            <button id="side-view" class="control-btn">侧视</button>
+            <button id="reset-camera" class="control-btn">重置<br>视角</button>
+            <button id="top-view" class="control-btn control-btn-secondary">俯视</button>
+            <button id="side-view" class="control-btn control-btn-secondary">侧视</button>
           </div>
         </div>
 
-        <div class="control-group">
-          <label>建筑浏览</label>
-          <select id="building-select" class="building-select">
-            <option value="">选择建筑</option>
-            <option value="library">图书馆</option>
-            <option value="dormitory">宿舍楼</option>
-            <option value="classroom">教学楼</option>
-            <option value="sports">体育馆</option>
-          </select>
-          <button id="focus-building" class="control-btn">聚焦建筑</button>
-        </div>
 
         <div class="control-group">
           <label>光照控制</label>
@@ -62,8 +61,12 @@ export class ControlPanel {
           </div>
           <div class="checkbox-group">
             <label>
-              <input type="checkbox" id="day-night-cycle" checked>
+              <input type="checkbox" id="day-night-cycle">
               昼夜循环
+            </label>
+            <label>
+              <input type="checkbox" id="follow-real-time">
+              跟随系统时间
             </label>
           </div>
         </div>
@@ -85,13 +88,14 @@ export class ControlPanel {
             </label>
           </div>
         </div>
+        </div>
 
-        <div class="control-group">
+        <div class="panel-info">
           <label>信息</label>
           <div class="info-display">
-            <div>FPS: <span id="fps-display">60</span></div>
-            <div>内存: <span id="memory-display">50MB</span></div>
-            <div>模型: <span id="model-count">0</span></div>
+            <div>FPS:</div><div><span id="fps-display">60</span></div>
+            <div>内存:</div><div><span id="memory-display">50MB</span></div>
+            <div>模型:</div><div><span id="model-count">0</span></div>
           </div>
         </div>
       </div>
@@ -129,13 +133,6 @@ export class ControlPanel {
       this.emit('setViewMode', e.target.value)
     })
 
-    // 建筑控制
-    this.panel.querySelector('#focus-building').addEventListener('click', () => {
-      const buildingId = this.panel.querySelector('#building-select').value
-      if (buildingId) {
-        this.emit('focusBuilding', buildingId)
-      }
-    })
 
     // 光照控制
     const timeSlider = this.panel.querySelector('#time-slider')
@@ -143,11 +140,39 @@ export class ControlPanel {
       const hour = parseInt(e.target.value)
       this.updateTimeDisplay(hour)
       this.emit('setTime', hour)
+
+      // 手动设置时间时，自动退出“跟随系统时间”
+      const followRealTime = this.panel.querySelector('#follow-real-time')
+      if (followRealTime && followRealTime.checked) {
+        followRealTime.checked = false
+        this.emit('toggleFollowRealTime', false)
+      }
     })
 
     const dayNightCycle = this.panel.querySelector('#day-night-cycle')
     dayNightCycle.addEventListener('change', (e) => {
       this.emit('toggleDayNightCycle', e.target.checked)
+
+      // 关闭昼夜循环时，也同步关闭“跟随系统时间”
+      if (!e.target.checked) {
+        const followRealTime = this.panel.querySelector('#follow-real-time')
+        if (followRealTime && followRealTime.checked) {
+          followRealTime.checked = false
+          this.emit('toggleFollowRealTime', false)
+        }
+      }
+    })
+
+    const followRealTime = this.panel.querySelector('#follow-real-time')
+    followRealTime.addEventListener('change', (e) => {
+      // 未开启昼夜循环时，不允许单独开启跟随系统时间
+      const cycle = this.panel.querySelector('#day-night-cycle')
+      if (e.target.checked && cycle && !cycle.checked) {
+        if (cycle) cycle.checked = true
+        this.emit('toggleDayNightCycle', true)
+      }
+
+      this.emit('toggleFollowRealTime', e.target.checked)
     })
 
     // 显示选项
@@ -172,15 +197,16 @@ export class ControlPanel {
    */
   togglePanel() {
     this.isVisible = !this.isVisible
-    const content = this.panel.querySelector('.panel-content')
-    const toggleBtn = this.panel.querySelector('#toggle-panel')
 
     if (this.isVisible) {
-      content.style.display = 'block'
-      toggleBtn.textContent = '−'
+      this.panel.classList.add('is-expanded')
     } else {
-      content.style.display = 'none'
-      toggleBtn.textContent = '+'
+      this.panel.classList.remove('is-expanded')
+    }
+
+    const toggleBtn = this.panel.querySelector('#toggle-panel')
+    if (toggleBtn) {
+      toggleBtn.textContent = this.isVisible ? '折叠' : '展开'
     }
   }
 
@@ -189,9 +215,36 @@ export class ControlPanel {
    */
   updateTimeDisplay(hour) {
     const timeValue = this.panel.querySelector('#time-value')
-    const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
-    const ampm = hour < 12 ? 'AM' : 'PM'
-    timeValue.textContent = `${hour12}:00 ${ampm}`
+
+    // 允许小数小时：例如 13.5 -> 13:30
+    const h = Number(hour)
+    if (!Number.isFinite(h)) return
+
+    const totalMinutes = ((h % 24) + 24) % 24 * 60
+    const hh24 = Math.floor(totalMinutes / 60) % 24
+    const mm = Math.round(totalMinutes % 60)
+
+    const hour12 = hh24 === 0 ? 12 : hh24 > 12 ? hh24 - 12 : hh24
+    const ampm = hh24 < 12 ? 'AM' : 'PM'
+    const mmStr = String(mm).padStart(2, '0')
+
+    timeValue.textContent = `${hour12}:${mmStr} ${ampm}`
+  }
+
+  setTime(hour) {
+    const slider = this.panel.querySelector('#time-slider')
+    if (slider) slider.value = String(Math.round(Number(hour) || 0))
+    this.updateTimeDisplay(hour)
+  }
+
+  setDayNightCycleEnabled(enabled) {
+    const cb = this.panel.querySelector('#day-night-cycle')
+    if (cb) cb.checked = !!enabled
+  }
+
+  setFollowRealTimeEnabled(enabled) {
+    const cb = this.panel.querySelector('#follow-real-time')
+    if (cb) cb.checked = !!enabled
   }
 
   /**
@@ -221,17 +274,6 @@ export class ControlPanel {
   /**
    * 设置建筑列表
    */
-  setBuildingsList(buildings) {
-    const select = this.panel.querySelector('#building-select')
-    select.innerHTML = '<option value="">选择建筑</option>'
-
-    buildings.forEach(building => {
-      const option = document.createElement('option')
-      option.value = building.id
-      option.textContent = building.name
-      select.appendChild(option)
-    })
-  }
 
   /**
    * 注册事件回调
