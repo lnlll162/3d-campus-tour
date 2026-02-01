@@ -1,0 +1,282 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* 顶部深蓝导航 */
+.home-header {
+  background: var(--nav-bg);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.home-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.home-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.home-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.92) url('/images/校徽.jpg') center / contain no-repeat;
+}
+
+.home-titles {
+  min-width: 0;
+}
+
+.home-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-subtitle {
+  font-size: 12px;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-nav-link {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: transparent;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.12s;
+}
+
+.home-nav-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.42);
+}
+
+.home-nav-link:active {
+  transform: translateY(1px);
+}
+
+.home-nav-link.primary {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--nav-bg);
+  border-color: rgba(255, 255, 255, 0.92);
+}
+
+.home-nav-link.primary:hover {
+  background: #fff;
+  border-color: #fff;
+}
+
+/* 白底门户内容 */
+.home-content {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 18px;
+}
+
+.home-hero {
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 18px;
+  align-items: center;
+
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.90) 55%, rgba(255,255,255,0.80) 100%),
+    url('/images/新东门.jpg') right center / cover no-repeat;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.home-hero-kicker {
+  font-size: 12px;
+  color: var(--primary-color);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.home-hero-heading {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: #0f172a;
+}
+
+.home-hero-desc {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.7;
+}
+
+.home-hero-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.home-primary,
+.home-secondary {
+  flex: 1;
+  min-width: 120px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.12s, background 0.12s, box-shadow 0.12s, border-color 0.12s;
+}
+
+.home-primary {
+  border: 1px solid var(--primary-color);
+  background: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 8px 16px rgba(14, 85, 169, 0.22);
+}
+
+.home-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.home-primary:active,
+.home-secondary:active {
+  transform: translateY(1px);
+}
+
+.home-secondary {
+  border: 1px solid rgba(14, 85, 169, 0.32);
+  background: transparent;
+  color: var(--primary-color);
+}
+
+.home-secondary:hover {
+  background: rgba(14, 85, 169, 0.06);
+  border-color: rgba(14, 85, 169, 0.45);
+}
+
+.home-hero-side {
+  background: linear-gradient(180deg, rgba(14, 85, 169, 0.08), rgba(14, 85, 169, 0.02));
+  border: 1px solid rgba(14, 85, 169, 0.12);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.home-hero-side-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.home-hero-side-item {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.8;
+}
+
+.home-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.home-tile {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.home-tile:hover {
+  transform: translateY(-2px);
+  border-color: rgba(14, 85, 169, 0.3);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+}
+
+.home-tile-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #0f172a;
+}
+
+.home-tile-desc {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.home-footer {
+  margin-top: auto;
+  padding: 14px 18px;
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+}
+
+@media (max-width: 960px) {
+  .home-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .home-header-inner {
+    padding: 12px 14px;
+  }
+
+  .home-nav {
+    gap: 8px;
+  }
+
+  .home-nav-link {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .home-content {
+    padding: 14px;
+  }
+
+  .home-hero {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+}

@@ -75,7 +75,7 @@ function getH5Url() {
         // 确保结尾没有斜杠
         const trimmed = String(localHost).replace(/\/$/, '')
         console.log('Using local dev host override from storage:', trimmed)
-        return `${trimmed}/index.html`
+        return `${trimmed}/index.html?page=home`
       }
     }
   } catch (e) {
@@ -89,7 +89,7 @@ function getH5Url() {
     url = `https://${url}`
   }
 
-  return `${url}/index.html`
+  return `${url}/index.html?page=home`
 }
 
 /**

@@ -140,12 +140,18 @@ export class CampusScene {
     // 初始化相机高度
     this.camera.position.y = Math.max(this.camera.position.y, this.fpv.height)
 
-    // 鼠标拖动看向（不强制 pointer lock，兼容 web-view）
+    // 鼠标/触摸拖动看向（移动端用单指拖拽控制视角）
     let dragging = false
     let lastX = 0
     let lastY = 0
 
+    const shouldHandleLook = (clientX, clientY) => {
+      // 仅处理右半屏拖拽，避免与左下摇杆冲突
+      return clientX > window.innerWidth * 0.35
+    }
+
     const onMouseDown = (e) => {
+      if (!shouldHandleLook(e.clientX, e.clientY)) return
       dragging = true
       lastX = e.clientX
       lastY = e.clientY
@@ -164,6 +170,60 @@ export class CampusScene {
       this.fpv.pitch -= dy * this.fpv.lookSensitivity
       const limit = Math.PI / 2 - 0.01
       this.fpv.pitch = Math.max(-limit, Math.min(limit, this.fpv.pitch))
+    }
+
+    let activeTouchId = null
+    const onTouchStart = (e) => {
+      if (!e.touches || e.touches.length === 0) return
+      // 如果已经有视角触控，就不抢占（避免多指）
+      if (activeTouchId !== null) return
+
+      // 找到第一个符合右侧区域的触点
+      for (let i = 0; i < e.touches.length; i++) {
+        const t = e.touches[i]
+        if (shouldHandleLook(t.clientX, t.clientY)) {
+          activeTouchId = t.identifier
+          dragging = true
+          lastX = t.clientX
+          lastY = t.clientY
+          e.preventDefault()
+          break
+        }
+      }
+    }
+
+    const onTouchMove = (e) => {
+      if (activeTouchId === null) return
+      let t = null
+      for (let i = 0; i < e.touches.length; i++) {
+        if (e.touches[i].identifier === activeTouchId) { t = e.touches[i]; break }
+      }
+      if (!t) return
+
+      const dx = t.clientX - lastX
+      const dy = t.clientY - lastY
+      lastX = t.clientX
+      lastY = t.clientY
+
+      this.fpv.yaw -= dx * this.fpv.lookSensitivity
+      this.fpv.pitch -= dy * this.fpv.lookSensitivity
+      const limit = Math.PI / 2 - 0.01
+      this.fpv.pitch = Math.max(-limit, Math.min(limit, this.fpv.pitch))
+
+      e.preventDefault()
+    }
+
+    const onTouchEnd = (e) => {
+      if (activeTouchId === null) return
+      // 触点结束或取消都释放
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === activeTouchId) {
+          activeTouchId = null
+          dragging = false
+          e.preventDefault()
+          break
+        }
+      }
     }
 
     // 键盘移动
@@ -191,6 +251,12 @@ export class CampusScene {
     window.addEventListener('mouseup', onMouseUp)
     window.addEventListener('mousemove', onMouseMove)
 
+    // 移动端触摸事件
+    canvas.addEventListener('touchstart', onTouchStart, { passive: false })
+    canvas.addEventListener('touchmove', onTouchMove, { passive: false })
+    canvas.addEventListener('touchend', onTouchEnd, { passive: false })
+    canvas.addEventListener('touchcancel', onTouchEnd, { passive: false })
+
     // 移动端虚拟摇杆
     this.createJoystick((x, y) => {
       if (this.fpv) {
@@ -205,6 +271,10 @@ export class CampusScene {
       canvas.removeEventListener('mousedown', onMouseDown)
       window.removeEventListener('mouseup', onMouseUp)
       window.removeEventListener('mousemove', onMouseMove)
+      canvas.removeEventListener('touchstart', onTouchStart)
+      canvas.removeEventListener('touchmove', onTouchMove)
+      canvas.removeEventListener('touchend', onTouchEnd)
+      canvas.removeEventListener('touchcancel', onTouchEnd)
       this.fpv = null
     }
   }
