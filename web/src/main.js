@@ -1,6 +1,7 @@
 import { CampusApp } from './App.js'
 import { HomePage } from './Home.js'
 import { PanoramaPage } from './Panorama.js'
+import { mountHomeButton } from './ui/HomeButton.js'
 
 // 全局样式
 import './styles/main.css'
@@ -64,8 +65,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const appEl = document.getElementById('app')
   let current = null
+  let unmountHomeFab = null
 
   const goto = async (page) => {
+    // 清理上一页的悬浮按钮
+    if (unmountHomeFab) {
+      unmountHomeFab()
+      unmountHomeFab = null
+    }
+
     // 清空容器（HomePage 会自己 unmount，CampusApp 目前没有 mount/unmount 概念，直接清空 DOM）
     if (current && current.unmount) current.unmount()
     appEl.innerHTML = ''
@@ -73,6 +81,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (page === 'campus') {
       setPage('campus', { replace: false })
       current = await initCampus()
+      unmountHomeFab = mountHomeButton({
+        onClick: async () => {
+          await goto('home')
+        }
+      })
     } else if (page === 'pano') {
       setPage('pano', { replace: false })
       const pano = new PanoramaPage({
@@ -82,6 +95,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       })
       pano.mount(appEl)
       current = pano
+      unmountHomeFab = mountHomeButton({
+        onClick: async () => {
+          await goto('home')
+        }
+      })
     } else {
       setPage('home', { replace: false })
       current = initHome({

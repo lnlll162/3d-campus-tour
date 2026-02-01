@@ -2,6 +2,7 @@
 
 @import './home.css';
 @import './panorama.css';
+@import './fab.css';
 
 :root {
   /* 深蓝门户风格（接近高校官网视觉） */
@@ -230,13 +231,14 @@ canvas:active {
 .control-panel {
   position: absolute;
   top: 20px;
-  right: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 12px;
   box-shadow: var(--shadow);
-  max-width: 320px;
-  z-index: 100;
+  max-width: min(520px, calc(100vw - 40px));
+  z-index: 200;
   font-size: 14px;
 }
 
