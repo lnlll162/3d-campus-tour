@@ -519,6 +519,15 @@ export class CampusScene {
     this.buildings = new Map()
     this.lights = []
 
+    // 昼夜系统
+    this.timeOfDay = 12
+    this.dayNightCycleEnabled = false
+    this.dayNightCycleSpeed = 1 / 3600 // 小时/秒：与现实时间一致（1小时=3600秒）
+    this.followRealTimeEnabled = false
+    this.sunLight = null
+    this.ambientLight = null
+    this.hemisphereLight = null
+
     // 鼠标交互
     this.raycaster = new THREE.Raycaster()
     this.mouse = new THREE.Vector2()
@@ -606,8 +615,120 @@ export class CampusScene {
     // 半球光 - 地面色改中性灰，避免染色
     const hemisphereLight = new THREE.HemisphereLight(0x87CEEB, 0x444444, 0.5)
 
-    this.scene.add(directionalLight, ambientLight, hemisphereLight)
-    this.lights.push(directionalLight, ambientLight, hemisphereLight)
+    this.sunLight = directionalLight
+    this.ambientLight = ambientLight
+    this.hemisphereLight = hemisphereLight
+
+    this.scene.add(this.sunLight, this.ambientLight, this.hemisphereLight)
+    this.lights.push(this.sunLight, this.ambientLight, this.hemisphereLight)
+
+    this.updateLighting(this.timeOfDay) // 初始化光照
+  }
+
+  setTimeOfDay(hour) {
+    const h = Number(hour)
+    if (!Number.isFinite(h)) return
+
+    this.timeOfDay = ((h % 24) + 24) % 24
+    this.updateLighting(this.timeOfDay)
+  }
+
+  setDayNightCycleEnabled(enabled) {
+    this.dayNightCycleEnabled = !!enabled
+  }
+
+  setFollowRealTimeEnabled(enabled) {
+    this.followRealTimeEnabled = !!enabled
+  }
+
+  getTimeOfDay() {
+    return this.timeOfDay
+  }
+
+  updateLighting(hour) {
+    if (!this.scene || !this.sunLight || !this.ambientLight || !this.hemisphereLight) return
+
+    const h = ((Number(hour) % 24) + 24) % 24
+
+    const sunDir = this.computeSunDirection(h)
+
+    const dist = 80
+    this.sunLight.position.copy(sunDir.clone().multiplyScalar(dist))
+    this.sunLight.target.position.set(0, 0, 0)
+    if (this.sunLight.target.parent !== this.scene) {
+      this.scene.add(this.sunLight.target)
+    }
+
+    const altitude = sunDir.y
+    const daylightRaw = THREE.MathUtils.smoothstep(altitude, -0.08, 0.2)
+    const daylight = THREE.MathUtils.lerp(0.18, 1.0, daylightRaw)
+
+    const sunColor = this.computeSunColor(daylight)
+    const skyColor = this.computeSkyColor(daylight)
+    const groundColor = this.computeGroundColor(daylight)
+
+    this.sunLight.intensity = THREE.MathUtils.lerp(0.0, 2.8, daylight)
+    this.sunLight.color.copy(sunColor)
+
+    this.ambientLight.intensity = THREE.MathUtils.lerp(0.12, 0.95, daylight)
+    this.ambientLight.color.copy(skyColor)
+
+    this.hemisphereLight.intensity = THREE.MathUtils.lerp(0.1, 0.55, daylight)
+    this.hemisphereLight.color.copy(skyColor)
+    this.hemisphereLight.groundColor.copy(groundColor)
+
+    const dayBg = new THREE.Color(0x87CEEB)
+    const nightBg = new THREE.Color(0x061a33)
+    const bg = nightBg.clone().lerp(dayBg, daylight)
+    this.scene.background = bg
+
+    const dayFog = new THREE.Color(0x87CEEB)
+    const nightFog = new THREE.Color(0x061a33)
+    const fogColor = nightFog.clone().lerp(dayFog, daylight)
+    if (this.scene.fog) {
+      this.scene.fog.color.copy(fogColor)
+    }
+  }
+
+  computeSunDirection(hour) {
+    // 将小时转换为弧度（0-24小时 -> 0-2π），-π/2 让 6:00 接近日出
+    const t = ((Number(hour) / 24) * 2 * Math.PI) - (Math.PI / 2)
+
+    // 太阳在天空中的方向：y 为高度，x/z 为方位
+    const x = Math.cos(t)
+    const y = Math.sin(t) * 0.8 // 控制太阳最高高度
+    const z = Math.cos(t) * 0.5 // 让太阳在地平面上有一定偏移
+
+    // 不强行把 y clamp 到正值，否则夜间会依然“有太阳”
+    return new THREE.Vector3(x, y, z).normalize()
+  }
+
+  computeSunColor(daylight) {
+    const night = new THREE.Color(0x9bbcff)
+    const dusk = new THREE.Color(0xffb26b)
+    const noon = new THREE.Color(0xffffff)
+
+    if (daylight < 0.15) {
+      return night.clone().lerp(dusk, daylight / 0.15)
+    }
+    return dusk.clone().lerp(noon, (daylight - 0.15) / 0.85)
+  }
+
+  computeSkyColor(daylight) {
+    const night = new THREE.Color(0x0b1d3a)
+    const dawn = new THREE.Color(0x7aa3d8)
+    const day = new THREE.Color(0xffffff)
+
+    if (daylight < 0.2) {
+      return night.clone().lerp(dawn, daylight / 0.2)
+    }
+    return dawn.clone().lerp(day, (daylight - 0.2) / 0.8)
+  }
+
+  computeGroundColor(daylight) {
+    const night = new THREE.Color(0x111827)
+    const day = new THREE.Color(0x444444)
+    return night.clone().lerp(day, daylight)
   }
 
   createControls() {
@@ -771,6 +892,18 @@ export class CampusScene {
     if (!this._lastFrameTime) this._lastFrameTime = now
     const dt = Math.min((now - this._lastFrameTime) / 1000, 0.05)
     this._lastFrameTime = now
+
+    // 昼夜循环
+    if (this.dayNightCycleEnabled) {
+      if (this.followRealTimeEnabled) {
+        const t = new Date()
+        this.timeOfDay = t.getHours() + t.getMinutes() / 60 + t.getSeconds() / 3600
+      } else {
+        this.timeOfDay = (this.timeOfDay + this.dayNightCycleSpeed * dt) % 24
+      }
+
+      this.updateLighting(this.timeOfDay)
+    }
 
     // 模式更新
     if (this.viewMode === 'fpv') {
