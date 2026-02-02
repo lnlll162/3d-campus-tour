@@ -177,6 +177,14 @@ canvas:active {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .control-panel.is-expanded .panel-content {
+    position: relative;
+  }
+
+  .control-panel.is-expanded .panel-content > .control-group {
+    width: 100%;
+  }
+
   .campus-ui {
     top: 10px;
     left: 10px;
@@ -1047,6 +1055,21 @@ canvas:active {
 }
 
 /* 动画定义 */
+@keyframes swipeHint {
+  0% {
+    transform: translateY(-50%) translateX(0);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(-50%) translateX(6px);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-50%) translateX(0);
+    opacity: 0.35;
+  }
+}
+
 @keyframes slideUp {
   from {
     transform: translateX(-50%) translateY(100%);
@@ -1081,7 +1104,7 @@ canvas:active {
     -webkit-overflow-scrolling: touch;
   }
 
-  /* 手机端：改为纵向栅格（不再横向分页滑动），避免只显示一半 */
+  /* 手机端（<=768）：默认纵向列表 */
   .control-panel.is-expanded .panel-content {
     display: grid;
     grid-template-columns: 1fr;
@@ -1094,6 +1117,54 @@ canvas:active {
   .control-panel.is-expanded .panel-content::before,
   .control-panel.is-expanded .panel-content::after {
     content: none;
+  }
+
+  /* 超窄屏（<=420）：改回横向滑动分页，避免首卡被挤/裁切，并给出向右滑提示 */
+  @media (max-width: 420px) {
+    .control-panel.is-expanded .panel-content {
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(260px, 86vw);
+      grid-template-columns: unset;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      padding: 0 14px 10px;
+      margin: 0 -14px;
+      scroll-padding-left: 14px;
+      scroll-padding-right: 14px;
+    }
+
+    .control-panel.is-expanded .panel-content > .control-group {
+      scroll-snap-align: start;
+    }
+
+    .control-panel.is-expanded .panel-content::after {
+      content: "";
+      position: sticky;
+      right: 0;
+      top: 0;
+      height: 100%;
+      width: 44px;
+      pointer-events: none;
+      z-index: 3;
+      background: linear-gradient(270deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+    }
+
+    .control-panel.is-expanded .panel-content::before {
+      content: "»";
+      position: sticky;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      z-index: 4;
+      color: rgba(14, 85, 169, 0.55);
+      font-size: 18px;
+      font-weight: 800;
+      animation: swipeHint 1.2s ease-in-out infinite;
+      text-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+    }
   }
 
   .control-panel.is-expanded .panel-info {
