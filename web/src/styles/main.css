@@ -1062,38 +1062,82 @@ canvas:active {
 @media (max-width: 768px) {
   .control-panel {
     top: 10px;
-    right: 10px;
     left: 10px;
-    max-width: none;
+    right: 10px;
+    width: auto;
+    transform: none;
+    border-radius: 16px;
   }
 
+  .panel-header {
+    padding: 10px 12px;
+  }
+
+  .control-panel.is-expanded .panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 12px 12px;
+    max-height: min(64vh, 520px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 手机端：改为纵向栅格（不再横向分页滑动），避免只显示一半 */
   .control-panel.is-expanded .panel-content {
-    grid-auto-columns: minmax(240px, 86vw);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    overflow: visible;
+    padding: 0;
+    margin: 0;
+  }
+
+  .control-panel.is-expanded .panel-content::before,
+  .control-panel.is-expanded .panel-content::after {
+    content: none;
+  }
+
+  .control-panel.is-expanded .panel-info {
+    min-width: 0;
+    height: auto;
+  }
+
+  .button-group {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .control-btn {
+    padding: 9px 10px;
+  }
+
+  .control-panel .building-select {
+    height: 38px;
+  }
+
+  /* 显示选项在手机端也保持单列 */
+  .control-group:has(#show-shadows) .checkbox-group {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 390px) {
+  .control-panel {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+  }
+
+  .panel-title {
+    font-size: 13px;
+  }
+
+  .toggle-btn {
+    padding: 6px 10px;
   }
 
   .button-group {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .info-panel {
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    max-width: none;
-    max-height: 60vh;
-  }
-
-  .loading-container {
-    padding: 20px;
-  }
-
-  .loading-logo h1 {
-    font-size: 20px;
-  }
-
-  .welcome-message {
-    margin: 20px;
-    padding: 24px;
   }
 }
 
