@@ -1074,11 +1074,9 @@ canvas:active {
   }
 
   .control-panel.is-expanded .panel-body {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: block;
     padding: 10px 12px 12px;
-    max-height: min(64vh, 520px);
+    max-height: calc(100vh - 80px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
